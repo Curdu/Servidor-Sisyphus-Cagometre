@@ -4,3 +4,21 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+axum = "0.8.8"
+axum-extra= {version = "0.12.5", features = ["typed-header"]}
+headers = "0.4.1"
+jsonwebtoken = "10.3.0"
+sqlx = { version = "0.8", features = [ "runtime-tokio", "tls-native-tls" , "postgres", "time", "json", "uuid", "chrono"] }
+tokio = {version = "1.49.0", features = ["full"]}
+serde = {version = "1.0.228", features = ["derive"]}
+serde_json = "1.0.149"
+mockall = "0.14.0"
+tracing = "0.1.44"
+tower-http = { version = "0.6.6", features = ["cors", "fs"] }
+dotenvy = "0.15.7"
+async-trait = "0.1.89"
+uuid = {version = "1.20.0", features=["serde", "v4"]}
+chrono = {version= "0.4.43", features=["serde"]}
+sha2 = "0.10.9"
+rand = "0.10.0"
+hex = "0.4.3"
