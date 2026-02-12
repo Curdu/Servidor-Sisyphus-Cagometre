@@ -1,12 +1,11 @@
 
-use core::error;
 use std::{ sync::Arc};
 
 use axum::{ Json, Router, extract::State, http::StatusCode, response::{IntoResponse, Response}, routing::{delete, get, post, put}};
 use chrono::{Utc};
 use uuid::{Uuid};
 
-use crate::{controladors::user_controller::UserController, errors::usuari_errors::UsuariErrors, routes::extractors::{auth_extractors::ClaimsInfo, usuari_extractors::{ActualitzarUsuariRequest, CrearUsuariRequest, EliminarUsuariRequest, ObtenirUsuariPerIdRequest}}, serveis::dtos::usuari_dto::{self, UsuariDTO}};
+use crate::{controladors::user_controller::UserController, errors::usuari_errors::UsuariErrors, routes::extractors::{usuari_extractors::{ActualitzarUsuariRequest, CrearUsuariRequest, EliminarUsuariRequest, ObtenirUsuariPerIdRequest}}, serveis::dtos::usuari_dto::{ UsuariDTO}};
 
 
 pub fn get_user_router(user_controller: Arc<dyn UserController>) -> Router{

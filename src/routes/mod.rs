@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
-use axum::{Router, http::Method, routing::Route};
+use axum::{Router, http::Method};
 use tower_http::cors::{Any, CorsLayer};
 
-use crate::{controladors::{self, user_controller::UserController}, routes::user_routes::get_user_router};
+use crate::{controladors::{user_controller::UserController}, routes::user_routes::get_user_router};
 
 pub(crate) mod user_routes;
 pub(crate) mod extractors;

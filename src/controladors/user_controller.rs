@@ -3,7 +3,7 @@ use std::{ sync::Arc};
 use async_trait::async_trait;
 use uuid::Uuid;
 
-use crate::{errors::usuari_errors::UsuariErrors, routes::extractors::auth_extractors::ClaimsInfo, serveis::{dtos::usuari_dto::UsuariDTO, user_service::UserService}};
+use crate::{errors::usuari_errors::UsuariErrors, serveis::{dtos::usuari_dto::UsuariDTO, user_service::UserService}};
 
 
 

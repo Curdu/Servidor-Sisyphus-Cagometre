@@ -5,7 +5,7 @@ use rand::{RngExt, distr::Alphanumeric};
 use sha2::{Digest, Sha512};
 use uuid::Uuid;
 
-use crate::{dades::{models::usuari::{self, Usuari}, repositoris::user_repository::UserRepository}, errors::usuari_errors::UsuariErrors, serveis::dtos::usuari_dto::UsuariDTO};
+use crate::{dades::{models::usuari::{Usuari}, repositoris::user_repository::UserRepository}, errors::usuari_errors::UsuariErrors, serveis::dtos::usuari_dto::UsuariDTO};
 
 #[async_trait]
 pub(crate) trait UserService: Send + Sync {
