@@ -1,5 +1,3 @@
-use std::any::Any;
-use std::fmt::Debug;
 
 use async_trait::async_trait;
 use sqlx::{Error, PgPool};
@@ -92,11 +90,7 @@ impl UserRepository for PostgresUserRepository {
         }
     }   
     async fn actualitza_usuari(&self ,id: Uuid, nou_usuari: Usuari) -> Result<(),UsuariErrors> {
-        let sql_query = r#"UPDATE usuari 
-        SET correu = $1 
-        SET nom = $2 
-        SET cognoms = $3 
-        WHERE id = $4"#;
+        let sql_query: &str = "UPDATE usuari SET correu = $1, nom = $2, cognoms = $3 WHERE id = $4";
 
         let result = query(sql_query)
             .bind(nou_usuari.correu)

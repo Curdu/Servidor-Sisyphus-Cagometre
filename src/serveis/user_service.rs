@@ -58,18 +58,24 @@ impl UserService for UserServei {
         let id = Uuid::new_v4();
         usuari.id = id.clone();
         
-        self.user_repository.crear_usuari(usuari).await;
-        let result = self.user_repository.obte_usuari_per_id(id).await;
-        match result {
-            Ok(user) => {
-                Ok(user.into())
+        let response = self.user_repository.crear_usuari(usuari).await;
+        match response {
+            Ok(_)=> {
+                let result = self.user_repository.obte_usuari_per_id(id).await;
+                match result {
+                    Ok(user) => {
+                        Ok(user.into())
 
+                    },
+                    Err(error) =>{
+                        Err(error)
+                    }
+                }
             },
-            Err(error) =>{
-                Err(error)
-            }
+            Err(error) => Err(error)
             
         }
+
     }
     async fn actualitzar_usuari(&self ,id: Uuid, usuari_dto: UsuariDTO) -> Result<(),UsuariErrors> {
         let usuari: Usuari = usuari_dto.into();
@@ -77,12 +83,19 @@ impl UserService for UserServei {
     }
     async fn actualitzar_usuari_amb_retorn(&self ,id: Uuid, usuari_dto: UsuariDTO) -> Result<UsuariDTO, UsuariErrors> {
         let usuari: Usuari = usuari_dto.into();
-        self.user_repository.actualitza_usuari(id, usuari).await;
-        let result = self.user_repository.obte_usuari_per_id(id).await;
-        match result {
-            Ok(user) => Ok(user.into()),
-            Err(error) => Err(error)
+        let response = self.user_repository.actualitza_usuari(id, usuari).await;
+        match response {
+            Ok(_) =>{
+                let result = self.user_repository.obte_usuari_per_id(id).await;
+                match result {
+                    Ok(user) => Ok(user.into()),
+                    Err(error) => Err(error)
+                }
+            }Err(error) =>{
+                Err(error)
+            }
         }
+        
     }
     async fn eliminar_usuari(&self ,id: Uuid) -> Result<(),UsuariErrors> {
         self.user_repository.elimina_usuari(id).await
