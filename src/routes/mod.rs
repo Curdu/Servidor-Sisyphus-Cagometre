@@ -7,6 +7,7 @@ use crate::{controladors::{user_controller::UserController}, routes::user_routes
 
 pub(crate) mod user_routes;
 pub(crate) mod extractors;
+pub(crate) mod lavabo_routes;
 
 pub(crate) fn get_router(controladors: Controladors) -> Router {
 
