@@ -9,7 +9,7 @@ use crate::serveis::dtos::lavabo_dto::LavaboDTO;
 pub(crate) struct Lavabo {
     pub(crate) id: Uuid,
     pub(crate) descripcio: String,
-    pub(crate) puntuacio: f32,
+    pub(crate) puntuacio: f64,
     pub(crate) created_at: DateTime<Utc> 
 }
 
