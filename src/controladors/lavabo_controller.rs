@@ -1,12 +1,39 @@
 use async_trait::async_trait;
+use std::sync::Arc;
 use uuid::Uuid;
 
-use crate::{errors::lavabo_errors::LavaboErrors, serveis::dtos::lavabo_dto::LavaboDTO};
+use crate::{errors::lavabo_errors::LavaboErrors, serveis::{dtos::lavabo_dto::LavaboDTO, lavabo_service::{LavaboService}}};
 
 #[async_trait]
 pub(crate) trait LavaboController: Sync + Send {
-    async fn crear_lavabo(&self, lavabo_dto: LavaboDTO) -> Result<LavaboDTO, LavaboErrors>;
+    async fn crear_lavabo(&self, lavabo_dto: LavaboDTO) -> Result<(), LavaboErrors>;
     async fn get_lavabo_per_id(&self,id: Uuid) -> Result<LavaboDTO, LavaboErrors>;
     async fn actualitzar_lavabo(&self,id: Uuid, lavabo_dto: LavaboDTO) -> Result<LavaboDTO, LavaboErrors>;
     async fn eliminar_lavabo(&self,id: Uuid) -> Result<(), LavaboErrors>;
+}
+
+pub(crate) struct LavaboControlador {
+    lavabo_service : Arc<dyn LavaboService> 
+}
+
+impl LavaboControlador {
+    pub(crate) fn new(lavabo_service : Arc<dyn LavaboService>) -> Self {
+        Self { lavabo_service }
+    }
+}
+
+#[async_trait]
+impl LavaboController for LavaboControlador {
+    async fn crear_lavabo(&self, lavabo_dto: LavaboDTO) -> Result<(), LavaboErrors>{
+        self.lavabo_service.crear_lavabo(lavabo_dto).await
+    }
+    async fn get_lavabo_per_id(&self,id: Uuid) -> Result<LavaboDTO, LavaboErrors>{
+        self.lavabo_service.obte_lavabo_per_id(id).await
+    }
+    async fn actualitzar_lavabo(&self,id: Uuid, lavabo_dto: LavaboDTO) -> Result<LavaboDTO, LavaboErrors>{
+        self.lavabo_service.actualitzar_lavabo(id, lavabo_dto).await
+    }
+    async fn eliminar_lavabo(&self,id: Uuid) -> Result<(), LavaboErrors>{
+        self.lavabo_service.eliminar_lavabo(id).await
+    }
 }
