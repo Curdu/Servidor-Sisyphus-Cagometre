@@ -1,8 +1,8 @@
-use std::{env, net::SocketAddr, sync::Arc};
+use std::{env, net::SocketAddr};
 
 use dotenvy::dotenv;
 
-use crate::{container::obtenir_controladors, routes::{Controladors, get_router}};
+use crate::{container::obtenir_controladors, routes::{get_router}};
 
 mod controladors;
 mod serveis;
@@ -19,9 +19,9 @@ async fn main() -> Result<(), sqlx::Error> {
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL no esta configurat");
     let database_type = env::var("DATABASE_TYPE").expect("DATABASE_TYPE no esta configurat");
 
-    let usuari_controlador = obtenir_controladors(database_type, database_url).await;
+    let controladors = obtenir_controladors(database_type, database_url).await;
 
-    let app = get_router(Controladors{usuari: Arc::new(usuari_controlador)});
+    let app = get_router(controladors);
     
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 3333));

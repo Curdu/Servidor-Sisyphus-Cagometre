@@ -1,9 +1,10 @@
 use std::sync::Arc;
 
 use axum::{Router, http::Method};
+use lavabo_routes::get_lavabo_router;
 use tower_http::cors::{Any, CorsLayer};
 
-use crate::{controladors::{user_controller::UserController}, routes::user_routes::get_user_router};
+use crate::{controladors::{lavabo_controller::LavaboController, user_controller::UserController}, routes::user_routes::get_user_router};
 
 pub(crate) mod user_routes;
 pub(crate) mod extractors;
@@ -18,12 +19,15 @@ pub(crate) fn get_router(controladors: Controladors) -> Router {
     
 
     let usuari_router = get_user_router(controladors.usuari);
+    let lavabo_router = get_lavabo_router(controladors.lavabo);
 
     Router::new()
         .nest("/api/usuaris", usuari_router)
+        .nest("/api/lavabos", lavabo_router)
         .layer(cors_layer)
 }
 
 pub(crate) struct  Controladors {
-    pub(crate) usuari: Arc<dyn UserController>
+    pub(crate) usuari: Arc<dyn UserController>,
+    pub(crate) lavabo: Arc<dyn LavaboController>
 }
