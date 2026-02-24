@@ -5,7 +5,7 @@ use axum::{ Json, Router, extract::State, http::StatusCode, response::{IntoRespo
 use chrono::{Utc};
 use uuid::{Uuid};
 
-use crate::{controladors::user_controller::UserController, errors::usuari_errors::UsuariErrors, routes::extractors::{usuari_extractors::{ActualitzarUsuariRequest, CrearUsuariRequest, EliminarUsuariRequest, ObtenirUsuariPerIdRequest}}, serveis::dtos::usuari_dto::{ UsuariDTO}};
+use crate::{controladors::user_controller::UserController, dades::models::rols::UsuariRol, errors::usuari_errors::UsuariErrors, routes::extractors::usuari_extractors::{ActualitzarUsuariRequest, CrearUsuariRequest, EliminarUsuariRequest, ObtenirUsuariPerIdRequest}, serveis::dtos::usuari_dto::UsuariDTO};
 
 
 pub fn get_user_router(user_controller: Arc<dyn UserController>) -> Router{
@@ -32,7 +32,7 @@ async  fn get_user_id(State(user_controller) : State<Arc<dyn UserController>> , 
 }
 
 async fn create_user(State(user_controller) : State<Arc<dyn UserController>>, body: Json<CrearUsuariRequest>) -> Result<Response, UsuariErrors> {
-    let usuari_dto = UsuariDTO::new(Uuid::nil(), body.correu.clone(), body.nom.clone(), body.cognoms.clone(), body.contrasenya.clone(), Utc::now());
+    let usuari_dto = UsuariDTO::new(Uuid::nil(), body.correu.clone(), body.nom.clone(), body.cognoms.clone(), body.contrasenya.clone(), Utc::now(), UsuariRol::USUARI);
     let result = user_controller.crear_usuari(usuari_dto).await;
     match result {
         Ok(()) => {
