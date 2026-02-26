@@ -1,6 +1,6 @@
-use std::{env, net::SocketAddr};
+use std::{net::SocketAddr};
 
-use dotenvy::dotenv;
+use state::{DATABASE_TYPE, DATABASE_URL};
 
 use crate::{container::obtenir_controladors, routes::{get_router}};
 
@@ -10,16 +10,12 @@ mod dades;
 mod routes;
 mod errors;
 mod container;
+mod state;
 
 #[tokio::main]
 async fn main() -> Result<(), sqlx::Error> {
 
-    dotenv().ok();
-
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL no esta configurat");
-    let database_type = env::var("DATABASE_TYPE").expect("DATABASE_TYPE no esta configurat");
-
-    let controladors = obtenir_controladors(database_type, database_url).await;
+    let controladors = obtenir_controladors(DATABASE_TYPE.clone(), DATABASE_URL.clone()).await;
 
     let app = get_router(controladors);
     

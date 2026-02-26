@@ -10,7 +10,6 @@ use crate::{dades::{models::usuari::{Usuari}, repositoris::user_repository::User
 #[async_trait]
 pub(crate) trait UserService: Send + Sync {
     
-    async fn iniciar_sessio(&self ,correu: String, contrasenya: String) -> Result<UsuariDTO, UsuariErrors>;
     async fn obtenir_usuari_per_id(&self ,id: Uuid) -> Result<UsuariDTO, UsuariErrors>;
     async fn crear_usuari(&self ,usuari: UsuariDTO) -> Result<(),UsuariErrors>;
     async fn crear_usuari_amb_retorn(&self ,usuari: UsuariDTO) -> Result<UsuariDTO, UsuariErrors>;
@@ -26,9 +25,6 @@ pub(crate) struct UserServei {
 #[async_trait]
 impl UserService for UserServei {
 
-    async fn iniciar_sessio(&self ,correu: String, contrasenya: String) -> Result<UsuariDTO, UsuariErrors> {
-        todo!()
-    }
     async fn obtenir_usuari_per_id(&self ,id: Uuid) -> Result<UsuariDTO, UsuariErrors> {
         let result = self.user_repository.obte_usuari_per_id(id).await;
         match result {
@@ -109,7 +105,7 @@ impl UserServei {
     }
 }
 
-fn generar_hash(contrasenya: &String) -> (String, String) {
+pub(crate) fn generar_hash(contrasenya: &String) -> (String, String) {
     let rng = rand::rng();
     let salt : String = rng.sample_iter(&Alphanumeric)
         .take(16)

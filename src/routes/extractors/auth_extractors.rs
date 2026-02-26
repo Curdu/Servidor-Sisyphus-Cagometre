@@ -7,3 +7,8 @@ pub(crate) struct ClaimsInfo {
     pub(crate) exp: u64,
     pub(crate) correu: String
 }
+#[derive(Serialize,Deserialize,Debug,Clone)]
+pub(crate) struct LoginRequest{
+    pub(crate) correu: String,
+    pub(crate) passwd: String
+}
