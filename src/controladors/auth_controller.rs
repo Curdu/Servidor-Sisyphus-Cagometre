@@ -28,6 +28,6 @@ impl AuthController for AuthControlador {
         self.auth_service.login(correu, passwd).await
     }
     async fn registre(&self, usuari_dto: UsuariDTO) -> Result<(), UsuariErrors> {
-        self.auth_service.registre(usuari_dto.into()).await
+        self.auth_service.registre(usuari_dto).await
     }
 }

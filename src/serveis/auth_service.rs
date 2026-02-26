@@ -6,13 +6,13 @@ use sha2::{Digest, Sha512};
 
 use crate::{dades::{models::usuari::Usuari, repositoris::user_repository::UserRepository}, errors::{auth_errors::AuthError, usuari_errors::UsuariErrors}, routes::extractors::auth_extractors::ClaimsInfo, state::SECRET_KEY};
 
-use super::dtos::auth_dto::AuthToken;
+use super::{dtos::{auth_dto::AuthToken, usuari_dto::UsuariDTO}, user_service::generar_hash};
 
 
 #[async_trait]
 pub(crate) trait AuthService: Send + Sync {
     async fn login(&self, correu: String, passwd: String) -> Result<AuthToken, AuthError>;
-    async fn registre(&self, usuari : Usuari) -> Result<(), UsuariErrors>;
+    async fn registre(&self, usuari : UsuariDTO) -> Result<(), UsuariErrors>;
 }
 
 pub(crate) struct AuthServei {
@@ -63,7 +63,9 @@ impl AuthService for AuthServei {
         }
 
     }
-    async fn registre(&self, usuari : Usuari) -> Result<(), UsuariErrors>{
-        todo!()
+    async fn registre(&self, usuari_dto : UsuariDTO) -> Result<(), UsuariErrors>{
+        let (hash, salt) = generar_hash(&usuari_dto.contrasenya);
+        let usuari = Usuari::new(usuari_dto.id, usuari_dto.correu, usuari_dto.nom , usuari_dto.cognoms, hash, salt, usuari_dto.created_at, usuari_dto.rol);
+        self.usuari_repository.crear_usuari(usuari).await
     }
 }
