@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use auth_routes::get_auth_router;
-use axum::{Router, http::Method};
+use auth_routes::{get_auth_router, verificar_token};
+use axum::{Router, http::Method, middleware};
 use lavabo_routes::get_lavabo_router;
 use tower_http::cors::{Any, CorsLayer};
 
@@ -18,10 +18,9 @@ pub(crate) fn get_router(controladors: Controladors) -> Router {
         .allow_origin(Any)
         .allow_methods([Method::GET, Method::POST,Method::PUT,Method::DELETE])
         .allow_headers(Any);
-    
 
-    let usuari_router = get_user_router(controladors.usuari);
-    let lavabo_router = get_lavabo_router(controladors.lavabo);
+    let usuari_router = get_user_router(controladors.usuari).route_layer(middleware::from_fn(verificar_token));
+    let lavabo_router = get_lavabo_router(controladors.lavabo).route_layer(middleware::from_fn(verificar_token));
     let auth_router = get_auth_router(controladors.auth);
 
     Router::new()

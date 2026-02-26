@@ -1,11 +1,13 @@
 
 use std::{ sync::Arc};
 
-use axum::{ Json, Router, extract::State, http::StatusCode, response::{IntoResponse, Response}, routing::{delete, get, post, put}};
+use axum::{ Extension, Json, Router, extract::State, http::StatusCode, response::{IntoResponse, Response}, routing::{delete, get, post, put}};
 use chrono::{Utc};
 use uuid::{Uuid};
 
 use crate::{controladors::user_controller::UserController, dades::models::rols::UsuariRol, errors::usuari_errors::UsuariErrors, routes::extractors::usuari_extractors::{ActualitzarUsuariRequest, CrearUsuariRequest, EliminarUsuariRequest, ObtenirUsuariPerIdRequest}, serveis::dtos::usuari_dto::UsuariDTO};
+
+use super::{extractors::auth_extractors::ClaimsInfo};
 
 
 pub fn get_user_router(user_controller: Arc<dyn UserController>) -> Router{
@@ -17,7 +19,7 @@ pub fn get_user_router(user_controller: Arc<dyn UserController>) -> Router{
     .with_state(user_controller.clone())
 }
 
-async  fn get_user_id(State(user_controller) : State<Arc<dyn UserController>> , body: Json<ObtenirUsuariPerIdRequest>) -> Result<Json<UsuariDTO>, UsuariErrors>{
+async  fn get_user_id(State(user_controller) : State<Arc<dyn UserController>> ,Extension(_claims) : Extension<ClaimsInfo>, body: Json<ObtenirUsuariPerIdRequest>) -> Result<Json<UsuariDTO>, UsuariErrors>{
     let result = user_controller.obte_usuari_per_id(body.id).await;
 
     match result {
