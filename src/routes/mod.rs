@@ -1,14 +1,16 @@
 use std::sync::Arc;
 
+use auth_routes::get_auth_router;
 use axum::{Router, http::Method};
 use lavabo_routes::get_lavabo_router;
 use tower_http::cors::{Any, CorsLayer};
 
-use crate::{controladors::{lavabo_controller::LavaboController, user_controller::UserController}, routes::user_routes::get_user_router};
+use crate::{controladors::{auth_controller::AuthController, lavabo_controller::LavaboController, user_controller::UserController}, routes::user_routes::get_user_router};
 
 pub(crate) mod user_routes;
 pub(crate) mod extractors;
 pub(crate) mod lavabo_routes;
+pub(crate) mod auth_routes;
 
 pub(crate) fn get_router(controladors: Controladors) -> Router {
 
@@ -20,14 +22,17 @@ pub(crate) fn get_router(controladors: Controladors) -> Router {
 
     let usuari_router = get_user_router(controladors.usuari);
     let lavabo_router = get_lavabo_router(controladors.lavabo);
+    let auth_router = get_auth_router(controladors.auth);
 
     Router::new()
         .nest("/api/usuaris", usuari_router)
         .nest("/api/lavabos", lavabo_router)
+        .nest("/api", auth_router)
         .layer(cors_layer)
 }
 
 pub(crate) struct  Controladors {
     pub(crate) usuari: Arc<dyn UserController>,
-    pub(crate) lavabo: Arc<dyn LavaboController>
+    pub(crate) lavabo: Arc<dyn LavaboController>,
+    pub(crate) auth: Arc<dyn AuthController>
 }
