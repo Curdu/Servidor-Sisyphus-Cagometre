@@ -7,7 +7,9 @@ use super::usuari_errors::UsuariErrors;
 pub(crate) enum AuthError {
     UsuariError(UsuariErrors),
     PasswdIncorrecte(String),
-    ServerError(String)
+    ServerError(String),
+    TokenInvalida(String),
+    TokenFaltant(String)
 }
 
 impl IntoResponse for AuthError {
@@ -28,6 +30,12 @@ impl IntoResponse for AuthError {
             },
             AuthError::ServerError(missatge) => {
                 (StatusCode::INTERNAL_SERVER_ERROR, missatge)
+            },
+            AuthError::TokenInvalida(_missatge) => {
+                (StatusCode::UNAUTHORIZED, "Token invàlida".to_string())
+            },
+            AuthError::TokenFaltant(_missatge) => {
+                (StatusCode::UNAUTHORIZED, "Falta token de validació".to_string())
             }
             
             
