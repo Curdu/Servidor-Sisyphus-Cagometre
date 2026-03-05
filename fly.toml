@@ -1,15 +1,12 @@
-# fly.toml app configuration file generated for servidor-sisyphus-cagometre on 2026-03-05T08:30:38+01:00
+# fly.toml app configuration file generated for servidor-sisyphus-cagometre-zdjouq on 2026-03-05T07:51:29Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'servidor-sisyphus-cagometre'
-primary_region = 'cdg'
+app = 'servidor-sisyphus-cagometre-zdjouq'
+primary_region = 'iad'
 
 [build]
-
-[env]
-  PORT = '8080'
 
 [http_service]
   internal_port = 8080
