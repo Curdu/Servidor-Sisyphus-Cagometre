@@ -20,7 +20,7 @@ async fn main() -> Result<(), sqlx::Error> {
     let app = get_router(controladors);
     
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], 3333));
+    let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
 
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
 
