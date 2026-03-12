@@ -1,7 +1,6 @@
 use std::{sync::Arc};
 
 use axum::{Json, Router, extract::{Path, State}, http::{StatusCode}, response::{IntoResponse, Response}, routing::{delete, get, post, put}};
-use chrono::Utc;
 use uuid::Uuid;
 
 use crate::{controladors::lavabo_controller::LavaboController, errors::lavabo_errors::LavaboErrors, serveis::dtos::lavabo_dto::LavaboDTO};
@@ -32,7 +31,7 @@ pub async fn get_lavabo_per_id(State(lavabo_controlador) : State<Arc<dyn LavaboC
     }
 }
 pub async fn post_crear_lavabo(State(lavabo_controlador) : State<Arc<dyn LavaboController>>, body : Json<CreateLavaboRequest>) -> Result<Response, LavaboErrors> {
-    let lavabo_dto = LavaboDTO::new(Uuid::new_v4(), body.puntuacio, body.descripcio.clone(), Utc::now());
+    let lavabo_dto : LavaboDTO = body.0.into();
     let result = lavabo_controlador.crear_lavabo(lavabo_dto).await;
     match result {
         Ok(())=>{
