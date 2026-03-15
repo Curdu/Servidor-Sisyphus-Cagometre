@@ -20,7 +20,7 @@ pub(crate) fn get_router(controladors: Controladors) -> Router {
         .allow_headers(Any);
 
     let usuari_router = get_user_router(controladors.usuari).route_layer(middleware::from_fn(verificar_token));
-    let lavabo_router = get_lavabo_router(controladors.lavabo).route_layer(middleware::from_fn(verificar_token));
+    let lavabo_router = get_lavabo_router(controladors.lavabo);
     let auth_router = get_auth_router(controladors.auth);
 
     Router::new()
