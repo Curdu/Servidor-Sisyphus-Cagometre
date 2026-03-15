@@ -34,13 +34,15 @@ impl LavaboRepository for PostgresLavaboRepository {
         }
     }
     async fn crear_lavabo(&self,lavabo : Lavabo) -> Result<(), LavaboErrors>{
-        let sql_query = r#"INSERT INTO lavabo (id,created_at,puntuacio,descripcio) VALUES ($1,$2,$3,$4)"#;
+        let sql_query = r#"INSERT INTO lavabo (id,created_at,puntuacio_mitja,descripcio, nombre_resenyes, titol) VALUES ($1,$2,$3,$4,$5,$6)"#;
 
         let result = query(sql_query)
             .bind(lavabo.id.clone())
             .bind(lavabo.created_at)
-            .bind(lavabo.puntuacio)
+            .bind(lavabo.puntuacio_mitja)
             .bind(lavabo.descripcio)
+            .bind(lavabo.nombre_resenyes)
+            .bind(lavabo.titol)
             .execute(&self.bd).await;
 
                 match result {
@@ -55,10 +57,10 @@ impl LavaboRepository for PostgresLavaboRepository {
                         if db_error.constraint().unwrap() == "lavabo_id_key" {
                             Err(LavaboErrors::LavaboExistent(format!("El lavabo amb el id {} ja existeix", lavabo.id)))
                         } else {
-                            Err(LavaboErrors::ServerError(codi.to_string()))
+                            Err(LavaboErrors::ServerError(db_error.to_string()))
                         }
                     }else {
-                        Err(LavaboErrors::ServerError(codi.to_string()))
+                        Err(LavaboErrors::ServerError(db_error.to_string()))
                     }
                 },
                 _ => {
@@ -72,10 +74,10 @@ impl LavaboRepository for PostgresLavaboRepository {
 
     }
     async fn actualitzar_lavabo(&self,id: Uuid, lavabo : Lavabo) -> Result<(), LavaboErrors>{
-        let sql_query = r#"UPDATE lavabo SET puntuacio = $1, descripcio = $2 WHERE id = $3"#;
+        let sql_query = r#"UPDATE lavabo SET descripcio = $1, titol = $2 WHERE id = $3"#;
         let result = query(sql_query)
-            .bind(lavabo.puntuacio)
             .bind(lavabo.descripcio)
+            .bind(lavabo.titol)
             .bind(id)
             .execute(&self.bd).await;
 

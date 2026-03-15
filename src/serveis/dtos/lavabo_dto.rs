@@ -2,24 +2,27 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::dades::models::lavabo::Lavabo;
+use crate::{dades::models::lavabo::Lavabo, routes::extractors::lavabo_extractors::CreateLavaboRequest};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub(crate) struct LavaboDTO {
     pub(crate) id: Uuid,
-    pub(crate) puntuacio: f64,
     pub(crate) descripcio: String,
+    pub(crate) titol: String,
+    pub(crate) puntuacio_mitja: f32,
+    pub(crate) nombre_resenyes: i64,
     pub(crate) created_at: DateTime<Utc>
 }
 
-impl LavaboDTO {
-    pub(crate) fn new(id : Uuid, puntuacio : f64, descripcio: String, created_at: DateTime<Utc>) -> Self{
-        Self { id, puntuacio, descripcio, created_at }
-    }
-}
 
 impl From<Lavabo> for LavaboDTO {
     fn from(value: Lavabo) -> Self {
-        Self { id: value.id, puntuacio: value.puntuacio, descripcio: value.descripcio, created_at: value.created_at}
+        Self { id: value.id, descripcio: value.descripcio, puntuacio_mitja: value.puntuacio_mitja, created_at: value.created_at, titol: value.titol, nombre_resenyes: value.nombre_resenyes}
+    }
+}
+
+impl From<CreateLavaboRequest> for LavaboDTO {
+    fn from(value: CreateLavaboRequest) -> Self {
+        Self { id: Uuid::new_v4(), descripcio: value.descripcio.clone(), titol: value.titol.clone(), puntuacio_mitja: 0.0, nombre_resenyes: 0, created_at: Utc::now() }
     }
 }
