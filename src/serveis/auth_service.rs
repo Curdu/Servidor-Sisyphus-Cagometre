@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use jsonwebtoken::{EncodingKey, Header, encode};
 use sha2::{Digest, Sha512};
 
-use crate::{dades::{models::usuari::Usuari, repositoris::user_repository::UserRepository}, errors::{auth_errors::AuthError, usuari_errors::UsuariErrors}, routes::extractors::auth_extractors::ClaimsInfo, state::SECRET_KEY};
+use crate::{dades::{models::usuari::Usuari, repositoris::traits::user_repository::UserRepository}, errors::{auth_errors::AuthError, usuari_errors::UsuariErrors}, routes::extractors::auth_extractors::ClaimsInfo, state::SECRET_KEY};
 
 use super::{dtos::{auth_dto::AuthToken, usuari_dto::UsuariDTO}, user_service::generar_hash};
 

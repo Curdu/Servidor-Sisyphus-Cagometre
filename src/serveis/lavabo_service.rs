@@ -3,7 +3,9 @@ use std::{sync::Arc};
 use async_trait::async_trait;
 use uuid::Uuid;
 
-use crate::{dades::repositoris::lavabo_repository::{LavaboRepository}, errors::lavabo_errors::LavaboErrors, serveis::dtos::lavabo_dto::LavaboDTO};
+use crate::{dades::repositoris::traits::lavabo_repository::{LavaboRepository}, errors::lavabo_errors::LavaboErrors, serveis::dtos::lavabo_dto::LavaboDTO};
+
+use super::dtos::lavabo_dto::LavaboAmbEtiquetesDTO;
 
 #[async_trait]
 pub(crate) trait LavaboService: Sync + Send {
@@ -11,6 +13,8 @@ pub(crate) trait LavaboService: Sync + Send {
     async fn obte_lavabo_per_id(&self, id: Uuid) -> Result<LavaboDTO, LavaboErrors>;
     async fn actualitzar_lavabo(&self, id: Uuid, lavabo_dto: LavaboDTO) -> Result<LavaboDTO, LavaboErrors>;
     async fn eliminar_lavabo(&self, id: Uuid) -> Result<(), LavaboErrors>;
+    async fn obte_tots_lavabos(&self) -> Result<Vec<LavaboDTO>, LavaboErrors>;
+    async fn obte_tots_lavabos_amb_etiquetes(&self) -> Result<Vec<LavaboAmbEtiquetesDTO>, LavaboErrors>;
 }
 
 pub(crate) struct  LavaboServei {
@@ -58,6 +62,15 @@ impl LavaboService for LavaboServei {
     }
     async fn eliminar_lavabo(&self, id: Uuid) -> Result<(), LavaboErrors>{
         self.lavabo_repository.eliminar_lavabo(id).await
+    }
+
+    async fn obte_tots_lavabos(&self) -> Result<Vec<LavaboDTO>, LavaboErrors> {
+        let lavabos = self.lavabo_repository.obte_tots_lavabos().await?;
+        Ok(lavabos.into_iter().map(Into::into).collect())
+    }
+    async fn obte_tots_lavabos_amb_etiquetes(&self) -> Result<Vec<LavaboAmbEtiquetesDTO>, LavaboErrors>{
+        let lavabos_amb_etiquetes = self.lavabo_repository.obte_tots_lavabos_amb_etiquetes().await?;
+        Ok(lavabos_amb_etiquetes.into_iter().map(Into::into).collect())        
     }
     
 }
