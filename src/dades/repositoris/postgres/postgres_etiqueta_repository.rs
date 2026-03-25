@@ -1,8 +1,8 @@
 use async_trait::async_trait;
-use sqlx::{PgPool, query};
+use sqlx::{PgPool, query, query_as};
 use uuid::Uuid;
 
-use crate::{dades::{models::etiqueta::Etiqueta, repositoris::compartit::irepository::IRepository}, errors::crud_errors::CrudErrors};
+use crate::{dades::{models::etiqueta::Etiqueta, repositoris::traits::{compartit::irepository::IRepository, etiqueta_repository::EtiquetaRepository}}, errors::crud_errors::CrudErrors};
 
 pub struct PostgresEtiquetaRepository {
     pub(crate) bd : PgPool
@@ -75,5 +75,16 @@ impl IRepository<Etiqueta> for PostgresEtiquetaRepository {
         } else {
             Ok(())
         }
+    }
+}
+#[async_trait]
+impl EtiquetaRepository for PostgresEtiquetaRepository {
+    async fn obte_totes_etiquetes(&self) -> Result<Vec<Etiqueta>, CrudErrors>{
+        let sql_query = r#"SELECT * FROM etiqueta"#;
+
+        let lavabos = query_as::<_,Etiqueta>(sql_query)
+            .fetch_all(&self.bd)
+            .await;
+        Ok(lavabos?)
     }
 }

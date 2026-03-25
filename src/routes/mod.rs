@@ -7,7 +7,7 @@ use lavabo_routes::get_lavabo_router;
 use resenya_routes::get_resenya_router;
 use tower_http::cors::{Any, CorsLayer};
 
-use crate::{controladors::{auth_controller::AuthController, icontroller::IController, lavabo_controller::LavaboController, user_controller::UserController}, routes::user_routes::get_user_router, serveis::dtos::{etiqueta_dto::EtiquetaDTO, resenya_dto::ResenyaDTO}};
+use crate::{controladors::{auth_controller::AuthController, etiqueta_controller::EtiquetaController, icontroller::IController, lavabo_controller::LavaboController, user_controller::UserController}, routes::user_routes::get_user_router, serveis::dtos::{resenya_dto::ResenyaDTO}};
 
 pub(crate) mod user_routes;
 pub(crate) mod extractors;
@@ -44,6 +44,6 @@ pub(crate) struct  Controladors {
     pub(crate) lavabo: Arc<dyn LavaboController>,
     pub(crate) auth: Arc<dyn AuthController>,
     pub(crate) resenya: Arc<dyn IController<ResenyaDTO>>,
-    pub(crate) etiqueta: Arc<dyn IController<EtiquetaDTO>>
+    pub(crate) etiqueta: Arc<dyn EtiquetaController>
 }
 

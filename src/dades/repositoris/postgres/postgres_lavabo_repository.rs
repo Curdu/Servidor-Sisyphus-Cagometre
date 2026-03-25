@@ -5,7 +5,7 @@ use sqlx::{query,query_as, Error};
 
 use crate::dades::models::lavabo::{Lavabo, LavaboAmbEtiquetes};
 use crate::errors::lavabo_errors::LavaboErrors;
-use crate::dades::repositoris::lavabo_repository::LavaboRepository;
+use crate::dades::repositoris::traits::lavabo_repository::LavaboRepository;
 
 pub(crate) struct PostgresLavaboRepository {
     bd : PgPool

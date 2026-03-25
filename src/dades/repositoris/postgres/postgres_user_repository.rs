@@ -4,7 +4,7 @@ use sqlx::{Error, PgPool};
 use uuid::Uuid;
 use sqlx::{query_as, query};
 
-use crate::dades::repositoris::user_repository::UserRepository;
+use crate::dades::repositoris::traits::user_repository::UserRepository;
 use crate::dades::models::usuari::Usuari;
 use crate::errors::usuari_errors::UsuariErrors;
 

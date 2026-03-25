@@ -3,16 +3,21 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use uuid::Uuid;
 
-use crate::{dades::{models::etiqueta::Etiqueta, repositoris::compartit::irepository::IRepository}, errors::crud_errors::CrudErrors};
+use crate::{dades::{repositoris::traits::{ etiqueta_repository::EtiquetaRepository}}, errors::crud_errors::CrudErrors};
 
 use super::{dtos::etiqueta_dto::EtiquetaDTO, iservice::IService};
 
+#[async_trait]
+pub (crate) trait EtiquetaService: IService<EtiquetaDTO> {
+    async fn obte_totes_etiquetes(&self) -> Result<Vec<EtiquetaDTO>, CrudErrors>;
+}
+
 pub(crate) struct EtiquetaServei {
-    etiqueta_repository: Arc<dyn IRepository<Etiqueta>>
+    etiqueta_repository: Arc<dyn EtiquetaRepository>
 }
 
 impl EtiquetaServei {
-    pub fn new(etiqueta_repository: Arc<dyn IRepository<Etiqueta>>) -> Self {
+    pub fn new(etiqueta_repository: Arc<dyn EtiquetaRepository>) -> Self {
         Self { etiqueta_repository }
     }
 }
@@ -35,5 +40,12 @@ impl IService<EtiquetaDTO> for EtiquetaServei {
     }
     async fn eliminar(&self, id: Uuid) -> Result<(), CrudErrors>{
         self.etiqueta_repository.eliminar(id).await
+    }
+}
+
+#[async_trait]
+impl EtiquetaService for EtiquetaServei {
+    async fn obte_totes_etiquetes(&self) -> Result<Vec<EtiquetaDTO>, CrudErrors>{
+        Ok(self.etiqueta_repository.obte_totes_etiquetes().await?.into_iter().map(Into::into).collect()) 
     }
 }
