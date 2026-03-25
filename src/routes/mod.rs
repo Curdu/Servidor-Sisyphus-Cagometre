@@ -24,8 +24,9 @@ pub(crate) fn get_router(controladors: Controladors) -> Router {
         .allow_headers(Any);
 
     let middleware_verificacio = middleware::from_fn(verificar_token);
+    
     let usuari_router = get_user_router(controladors.usuari).route_layer(middleware_verificacio.clone());
-    let lavabo_router = get_lavabo_router(controladors.lavabo);
+    let lavabo_router = get_lavabo_router(controladors.lavabo).route_layer(middleware_verificacio.clone());
     let auth_router = get_auth_router(controladors.auth);
     let resenya_router = get_resenya_router(controladors.resenya).route_layer(middleware_verificacio.clone());
     let etiqueta_router = get_etiqueta_router(controladors.etiqueta).route_layer(middleware_verificacio.clone());
