@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use sqlx::{PgPool, query};
 use uuid::Uuid;
 
-use crate::{dades::{models::resenya::Resenya, repositoris::compartit::irepository::IRepository}, errors::crud_errors::CrudErrors};
+use crate::{dades::{models::resenya::Resenya, repositoris::traits::compartit::irepository::IRepository}, errors::crud_errors::CrudErrors};
 
 pub(crate) struct PostgresResenyaRepository {
     bd : PgPool

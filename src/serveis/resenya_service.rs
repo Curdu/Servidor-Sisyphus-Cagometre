@@ -3,7 +3,7 @@ use std::sync::Arc;
 use async_trait::async_trait;
 
 
-use crate::dades::{models::resenya::Resenya, repositoris::compartit::irepository::IRepository};
+use crate::dades::{models::resenya::Resenya, repositoris::traits::compartit::irepository::IRepository};
 use crate::errors::crud_errors::{CrudErrors};
 use super::{dtos::resenya_dto::ResenyaDTO, iservice::IService};
 

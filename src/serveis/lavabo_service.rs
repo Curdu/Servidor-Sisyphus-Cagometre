@@ -3,7 +3,7 @@ use std::{sync::Arc};
 use async_trait::async_trait;
 use uuid::Uuid;
 
-use crate::{dades::repositoris::lavabo_repository::{LavaboRepository}, errors::lavabo_errors::LavaboErrors, serveis::dtos::lavabo_dto::LavaboDTO};
+use crate::{dades::repositoris::traits::lavabo_repository::{LavaboRepository}, errors::lavabo_errors::LavaboErrors, serveis::dtos::lavabo_dto::LavaboDTO};
 
 use super::dtos::lavabo_dto::LavaboAmbEtiquetesDTO;
 
