@@ -1,10 +1,11 @@
 use chrono::{DateTime, Utc};
+use serde::Deserialize;
 use sqlx::prelude::FromRow;
 use uuid::Uuid;
 
 use crate::serveis::dtos::etiqueta_dto::EtiquetaDTO;
 
-#[derive(FromRow)]
+#[derive(FromRow, Debug, Deserialize)]
 pub(crate) struct Etiqueta{
     pub(crate) id: Uuid,
     pub(crate) nom: String,
