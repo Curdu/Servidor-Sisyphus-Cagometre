@@ -3,7 +3,7 @@ use std::{sync::Arc};
 use axum::{Json, Router, extract::{Path, State}, http::{StatusCode}, response::{IntoResponse, Response}, routing::{delete, get, post, put}};
 use uuid::Uuid;
 
-use crate::{controladors::lavabo_controller::LavaboController, errors::lavabo_errors::LavaboErrors, serveis::dtos::lavabo_dto::LavaboDTO};
+use crate::{controladors::lavabo_controller::LavaboController, errors::lavabo_errors::LavaboErrors, serveis::dtos::lavabo_dto::{LavaboAmbEtiquetesDTO, LavaboDTO}};
 
 use super::extractors::lavabo_extractors::CreateLavaboRequest;
 
@@ -14,6 +14,8 @@ pub fn get_lavabo_router(lavabo_controller : Arc<dyn LavaboController>) -> Route
     .route("/", post(post_crear_lavabo))
     .route("/{id}", put(put_actualitzar_lavabo))
     .route("/{id}", delete(delete_eliminar_lavabo))
+    .route("/", get(get_tots_lavabos))
+    .route("/previews", get(get_tots_lavabos_amb_etiquetes))
     .with_state(lavabo_controller.clone())
 }
 
@@ -57,4 +59,12 @@ pub async fn delete_eliminar_lavabo(State(lavabo_controlador) : State<Arc<dyn La
         Err(error) => Err(error)
         
     }
+}
+
+pub async fn get_tots_lavabos(State(lavabo_controlador) : State<Arc<dyn LavaboController>>) -> Result<Json<Vec<LavaboDTO>>, LavaboErrors> {
+    Ok(Json(lavabo_controlador.get_tots_lavabos().await?)) 
+}
+
+pub async fn get_tots_lavabos_amb_etiquetes(State(lavabo_controlador) : State<Arc<dyn LavaboController>>) -> Result<Json<Vec<LavaboAmbEtiquetesDTO>>, LavaboErrors> {
+    Ok(Json(lavabo_controlador.get_tots_lavabos_amb_etiqueta().await?))
 }

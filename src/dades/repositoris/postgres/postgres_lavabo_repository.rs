@@ -3,7 +3,7 @@ use sqlx::PgPool;
 use uuid::Uuid;
 use sqlx::{query,query_as, Error};
 
-use crate::dades::models::lavabo::Lavabo;
+use crate::dades::models::lavabo::{Lavabo, LavaboAmbEtiquetes};
 use crate::errors::lavabo_errors::LavaboErrors;
 use crate::dades::repositoris::lavabo_repository::LavaboRepository;
 
@@ -108,6 +108,47 @@ impl LavaboRepository for PostgresLavaboRepository {
                     Ok(())
                 }
             },
+            Err(error) => Err(LavaboErrors::ServerError(error.to_string()))
+            
+        }
+    }
+
+    async fn obte_tots_lavabos(&self) -> Result<Vec<Lavabo>, LavaboErrors> {
+        let sql_query = r#"SELECT * FROM lavabo"#;
+        let result = query_as::<_,Lavabo>(sql_query)
+            .fetch_all(&self.bd).await;
+
+        match result {
+            Ok(lavabos) => Ok(lavabos),
+            Err(error) => Err(LavaboErrors::ServerError(error.to_string()))
+        }
+        
+    }
+    async fn obte_tots_lavabos_amb_etiquetes(&self) -> Result<Vec<LavaboAmbEtiquetes>, LavaboErrors> {
+        let sql_query = r#"
+        SELECT 
+            l.id, 
+            l.created_at, 
+            l.descripcio, 
+            l.titol, 
+            l.puntuacio_mitja, 
+            l.nombre_resenyes,
+            COALESCE(
+                JSON_AGG(
+                    JSON_BUILD_OBJECT('id', e.id, 'nom', e.nom, 'created_at', e.created_at)
+                ) FILTER (WHERE e.id IS NOT NULL),
+                 '[]'
+            ) AS etiquetes
+        FROM lavabo l 
+        LEFT JOIN lavabo_etiqueta le ON l.id = le.id_lavabo
+        LEFT JOIN etiqueta e ON le.id_etiqueta = e.id
+        GROUP BY l.id"#;
+
+        let result = query_as::<_,LavaboAmbEtiquetes>(sql_query)
+            .fetch_all(&self.bd)
+            .await;
+        match result {
+            Ok(lavabos) => Ok(lavabos),
             Err(error) => Err(LavaboErrors::ServerError(error.to_string()))
             
         }
