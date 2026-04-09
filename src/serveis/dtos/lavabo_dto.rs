@@ -13,19 +13,20 @@ pub(crate) struct LavaboDTO {
     pub(crate) titol: String,
     pub(crate) puntuacio_mitja: f32,
     pub(crate) nombre_resenyes: i64,
-    pub(crate) created_at: DateTime<Utc>
+    pub(crate) created_at: DateTime<Utc>,
+    pub(crate) creador_id: Uuid
 }
 
 
 impl From<Lavabo> for LavaboDTO {
     fn from(value: Lavabo) -> Self {
-        Self { id: value.id, descripcio: value.descripcio, puntuacio_mitja: value.puntuacio_mitja, created_at: value.created_at, titol: value.titol, nombre_resenyes: value.nombre_resenyes}
+        Self { id: value.id, descripcio: value.descripcio, puntuacio_mitja: value.puntuacio_mitja, created_at: value.created_at, titol: value.titol, nombre_resenyes: value.nombre_resenyes, creador_id: value.creador_id}
     }
 }
 
 impl From<CreateLavaboRequest> for LavaboDTO {
     fn from(value: CreateLavaboRequest) -> Self {
-        Self { id: Uuid::new_v4(), descripcio: value.descripcio.clone(), titol: value.titol.clone(), puntuacio_mitja: 0.0, nombre_resenyes: 0, created_at: Utc::now() }
+        Self { id: Uuid::new_v4(), descripcio: value.descripcio.clone(), titol: value.titol.clone(), puntuacio_mitja: 0.0, nombre_resenyes: 0, created_at: Utc::now() , creador_id: Uuid::nil()}
     }
 }
 
