@@ -4,7 +4,7 @@ version = "0.2.2"
 edition = "2024"
 
 [dependencies]
-axum = "0.8.8"
+axum = {version = "0.8.8", features = ["multipart"]}
 axum-extra= {version = "0.12.5", features = ["typed-header"]}
 headers = "0.4.1"
 jsonwebtoken = {version ="10.3.0", features =["rust_crypto"]}
@@ -22,3 +22,5 @@ chrono = {version= "0.4.43", features=["serde"]}
 sha2 = "0.10.9"
 rand = "0.10.0"
 hex = "0.4.3"
+supabase-lib-rs = "0.5.3"
+axum_typed_multipart = "0.16.5"

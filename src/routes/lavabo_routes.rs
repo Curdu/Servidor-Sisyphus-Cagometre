@@ -32,8 +32,13 @@ pub async fn get_lavabo_per_id(State(lavabo_controlador) : State<Arc<dyn LavaboC
         
     }
 }
-pub async fn post_crear_lavabo(State(lavabo_controlador) : State<Arc<dyn LavaboController>>, body : Json<CreateLavaboRequest>) -> Result<Response, LavaboErrors> {
-    let lavabo_dto : LavaboDTO = body.0.into();
+pub async fn post_crear_lavabo(
+    State(lavabo_controlador) : State<Arc<dyn LavaboController>>,
+    Extension(claims): Extension<ClaimsInfo>,
+    TypedMultipart(body): TypedMultipart<CreateLavaboRequest>
+) -> Result<Response, LavaboErrors> {
+    let mut lavabo_dto : LavaboDTO = body.into();
+    lavabo_dto.creador_id = claims.sub;
     let result = lavabo_controlador.crear_lavabo(lavabo_dto).await;
     match result {
         Ok(())=>{
