@@ -52,7 +52,10 @@ impl LavaboService for LavaboServei {
             }
         }
         if errors.len() > 0 {
-            Err(LavaboErrors::ImatgeNoPujada("La pujada de la imatge ha fallat".to_string()))
+            match &errors[0] {
+                StorageError::ServerError(message) => Err(LavaboErrors::ImatgeNoPujada(message.clone())),
+            }
+            
         } else {
             Ok(())
         }
