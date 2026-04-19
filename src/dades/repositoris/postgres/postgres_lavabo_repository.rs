@@ -134,15 +134,23 @@ impl LavaboRepository for PostgresLavaboRepository {
             l.titol, 
             l.puntuacio_mitja, 
             l.nombre_resenyes,
+            l.creador_id,
             COALESCE(
                 JSON_AGG(
                     JSON_BUILD_OBJECT('id', e.id, 'nom', e.nom, 'created_at', e.created_at)
                 ) FILTER (WHERE e.id IS NOT NULL),
                  '[]'
-            ) AS etiquetes
+            ) AS etiquetes,
+            COALESCE(
+                JSON_AGG(
+                    JSON_BUILD_OBJECT('lavabo_id', il.lavabo_id, 'path', il.path, 'created_at', il.created_at)
+                ) FILTER (WHERE il.lavabo_id IS NOT NULL),
+                 '[]'
+            ) AS imatges
         FROM lavabo l 
         LEFT JOIN lavabo_etiqueta le ON l.id = le.id_lavabo
         LEFT JOIN etiqueta e ON le.id_etiqueta = e.id
+        LEFT JOIN imatge_lavabo il ON l.id = il.lavabo_id
         GROUP BY l.id"#;
 
         let result = query_as::<_,LavaboAmbEtiquetes>(sql_query)

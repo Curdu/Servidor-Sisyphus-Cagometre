@@ -3,9 +3,9 @@ use std::{sync::Arc};
 use axum::{Extension, Json, Router, extract::{Path, State}, http::StatusCode, response::{IntoResponse, Response}, routing::{delete, get, post, put}};
 use uuid::Uuid;
 
-use crate::{controladors::icontroller::IController, errors::crud_errors::CrudErrors, serveis::dtos::{ resenya_dto::ResenyaDTO}};
+use crate::{controladors::icontroller::IController, errors::crud_errors::CrudErrors, serveis::dtos::{ auth_dto::AuthDataDTO, resenya_dto::ResenyaDTO}};
 
-use super::extractors::{auth_extractors::ClaimsInfo, resenya_extractors::CreateResenyaRequest};
+use super::extractors::{resenya_extractors::CreateResenyaRequest};
 
 pub fn get_resenya_router(resenya_controller : Arc<dyn IController<ResenyaDTO>>) -> Router {
     Router::new()
@@ -23,10 +23,10 @@ pub async fn get_resenya_per_id(State(resenya_controller) : State<Arc<dyn IContr
 pub async fn crear_resenya
 (
     State(resenya_controller) : State<Arc<dyn IController<ResenyaDTO>>>,
-    Extension(claims): Extension<ClaimsInfo>,
+    Extension(claims): Extension<AuthDataDTO>,
     mut body : Json<CreateResenyaRequest>
 ) -> Result<Response, CrudErrors> {
-    body.0.id_usuari = Option::Some(claims.user_id);
+    body.0.id_usuari = Option::Some(Uuid::parse_str(&claims.sub).unwrap());
     resenya_controller.crear(body.0.into()).await?;
     let response = (StatusCode::CREATED, "Resenya creada correctament".to_string()).into_response();
     Ok(response) 

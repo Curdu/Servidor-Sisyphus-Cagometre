@@ -38,7 +38,9 @@ pub(crate) struct LavaboAmbEtiquetesDTO {
     pub(crate) puntuacio_mitja: f32,
     pub(crate) nombre_resenyes: i64,
     pub(crate) created_at: DateTime<Utc>,
-    pub(crate) etiquetes: Vec<EtiquetaDTO>
+    pub(crate) etiquetes: Vec<EtiquetaDTO>,
+    pub(crate) imatges: Vec<String>,
+    pub(crate) creador_id: Uuid
 }
 
 impl From<LavaboAmbEtiquetes> for LavaboAmbEtiquetesDTO {
@@ -50,7 +52,9 @@ impl From<LavaboAmbEtiquetes> for LavaboAmbEtiquetesDTO {
             puntuacio_mitja: value.puntuacio_mitja, 
             nombre_resenyes: value.nombre_resenyes, 
             created_at: value.created_at, 
-            etiquetes: value.etiquetes.into_iter().map(Into::into).collect()
+            etiquetes: value.etiquetes.into_iter().map(Into::into).collect(),
+            imatges: value.imatges.into_iter().map(|l| l.get_public_url()).collect(),
+            creador_id: value.creador_id
         }
     }
 }
