@@ -32,5 +32,25 @@ pub(crate) struct LavaboAmbEtiquetes {
     pub(crate) nombre_resenyes: i64,
     pub(crate) created_at: DateTime<Utc>,
     #[sqlx(json)]
-    pub(crate) etiquetes: Vec<Etiqueta>
+    pub(crate) etiquetes: Vec<Etiqueta>,
+    #[sqlx(json)]
+    pub(crate) imatges: Vec<LavaboImatge>,
+    pub(crate) creador_id: Uuid
+}
+
+#[derive(FromRow, Debug, Deserialize)]
+pub(crate) struct LavaboImatge {
+    pub(crate) path: String,
+    pub(crate) lavabo_id: Uuid,
+    pub(crate) created_at: DateTime<Utc>
+}
+
+impl LavaboImatge {
+    pub fn new (path: String, lavabo_id: Uuid, created_at : DateTime<Utc>) -> Self {
+        Self{path,lavabo_id,created_at}
+    }
+
+    pub fn get_public_url (&self) -> String {
+        format!("https://gcpxeolootoyuomnrpfu.supabase.co/storage/v1/object/public/lavabo_images/{}/{}", &self.lavabo_id, &self.path)
+    }
 }
