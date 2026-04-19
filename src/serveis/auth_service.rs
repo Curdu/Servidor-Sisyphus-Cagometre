@@ -2,6 +2,7 @@ use std::{sync::Arc, time::{SystemTime, UNIX_EPOCH}};
 
 use async_trait::async_trait;
 use jsonwebtoken::{EncodingKey, Header, encode};
+use serde_json::json;
 use sha2::{Digest, Sha512};
 
 use crate::{dades::{models::usuari::Usuari, repositoris::traits::user_repository::UserRepository}, errors::{auth_errors::AuthError, usuari_errors::UsuariErrors}, routes::extractors::auth_extractors::ClaimsInfo, state::SECRET_KEY};
@@ -49,8 +50,19 @@ impl AuthService for AuthServei {
 
                 let now = SystemTime::now().duration_since(UNIX_EPOCH).expect("Algo ha fallat").as_secs() as u64;
                 let expiracio = now + 3600;
-                let claims = ClaimsInfo{user_id: usuari.id, exp: expiracio, correu: usuari.correu};
-                let token = encode(&Header::default(), &claims, &EncodingKey::from_secret(SECRET_KEY.clone().as_bytes()));
+                let claims = ClaimsInfo
+                {
+                    sub: usuari.id.to_string(), 
+                    exp: expiracio, 
+                    email: usuari.correu,
+                    iat: SystemTime::now().duration_since(UNIX_EPOCH).expect("Algo ha fallat").as_secs(),
+                    role: "authenticated".to_string(),
+                    aud: "authenticated".to_string(),
+                    iss: "supabase".to_string(),
+                    app_metadata: json!({ "provider": "email"}),
+                    user_metadata: json!({})
+                };
+                let token = encode(&Header::new(jsonwebtoken::Algorithm::HS256), &claims, &EncodingKey::from_secret(SECRET_KEY.clone().as_bytes()));
                 match token {
                     Ok(token) => Ok(AuthToken::new(token)),
                     Err(error) => Err(AuthError::ServerError(error.to_string()))

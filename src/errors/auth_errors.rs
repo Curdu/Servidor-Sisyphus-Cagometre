@@ -32,7 +32,7 @@ impl IntoResponse for AuthError {
                 (StatusCode::INTERNAL_SERVER_ERROR, missatge)
             },
             AuthError::TokenInvalida(_missatge) => {
-                (StatusCode::UNAUTHORIZED, "Token invàlida".to_string())
+                (StatusCode::UNAUTHORIZED, _missatge)
             },
             AuthError::TokenFaltant(_missatge) => {
                 (StatusCode::UNAUTHORIZED, "Falta token de validació".to_string())
