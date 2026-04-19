@@ -7,7 +7,7 @@ use headers::{Authorization, authorization::Bearer};
 use jsonwebtoken::{DecodingKey, Validation, decode};
 use uuid::Uuid;
 
-use crate::{controladors::auth_controller::AuthController, dades::models::rols::UsuariRol, errors::{auth_errors::AuthError, usuari_errors::UsuariErrors}, routes::extractors::auth_extractors::ClaimsInfo, serveis::dtos::{auth_dto::AuthToken, usuari_dto::UsuariDTO}, state::SECRET_KEY};
+use crate::{controladors::auth_controller::AuthController, dades::models::rols::UsuariRol, errors::{auth_errors::AuthError, usuari_errors::UsuariErrors}, routes::extractors::auth_extractors::ClaimsInfo, serveis::dtos::{auth_dto::{AuthDataDTO, AuthToken}, usuari_dto::UsuariDTO}, state::SECRET_KEY};
 
 use super::extractors::{auth_extractors::LoginRequest, usuari_extractors::CrearUsuariRequest};
 
@@ -44,10 +44,17 @@ pub (crate) async fn verificar_token(auth_header: Option<TypedHeader<Authorizati
 
     let TypedHeader(auth) = auth_header.ok_or(AuthError::TokenFaltant("Falta token en la petició".to_string()))?;
 
+    let mut validacio = Validation::new(jsonwebtoken::Algorithm::HS256);
+
+    let mut audiencia = std::collections::HashSet::new();
+    audiencia.insert("authenticated".to_string());
+
+    validacio.aud = Some(audiencia);
+
     let token_decodificada = decode::<ClaimsInfo>(
         auth.token(), 
         &DecodingKey::from_secret(SECRET_KEY.as_bytes()), 
-        &Validation::default()
+        &validacio
     );
 
     let tokn = match token_decodificada {
@@ -59,7 +66,9 @@ pub (crate) async fn verificar_token(auth_header: Option<TypedHeader<Authorizati
         }
     };
 
-    req.extensions_mut().insert(tokn);
+    let token_codificada = AuthToken::new(auth.token().to_string());
+
+    req.extensions_mut().insert(AuthDataDTO::new(tokn, token_codificada.token));
 
     Ok(next.run(req).await)
 

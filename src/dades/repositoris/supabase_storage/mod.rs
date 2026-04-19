@@ -1,0 +1,1 @@
+pub(crate) mod supabase_lavabo_images_repository;

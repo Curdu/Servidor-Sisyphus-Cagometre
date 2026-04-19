@@ -1,11 +1,13 @@
 use std::{sync::Arc};
 
-use axum::{Json, Router, extract::{Path, State}, http::{StatusCode}, response::{IntoResponse, Response}, routing::{delete, get, post, put}};
-use uuid::Uuid;
+use axum::{Extension, Json, Router, extract::{Path, State}, http::StatusCode, response::{IntoResponse, Response}, routing::{delete, get, post, put}};
+use axum_typed_multipart::{FieldData, TypedMultipart};
+use tempfile::NamedTempFile;
+use uuid::{Uuid};
 
-use crate::{controladors::lavabo_controller::LavaboController, errors::lavabo_errors::LavaboErrors, serveis::dtos::lavabo_dto::{LavaboAmbEtiquetesDTO, LavaboDTO}};
+use crate::{controladors::lavabo_controller::LavaboController, errors::lavabo_errors::LavaboErrors, serveis::dtos::{auth_dto::{AuthDataDTO, AuthToken}, lavabo_dto::{LavaboAmbEtiquetesDTO, LavaboDTO}}, state::SECRET_KEY};
 
-use super::extractors::lavabo_extractors::CreateLavaboRequest;
+use super::extractors::{ lavabo_extractors::CreateLavaboRequest};
 
 
 pub fn get_lavabo_router(lavabo_controller : Arc<dyn LavaboController>) -> Router {
@@ -32,9 +34,14 @@ pub async fn get_lavabo_per_id(State(lavabo_controlador) : State<Arc<dyn LavaboC
         
     }
 }
-pub async fn post_crear_lavabo(State(lavabo_controlador) : State<Arc<dyn LavaboController>>, body : Json<CreateLavaboRequest>) -> Result<Response, LavaboErrors> {
-    let lavabo_dto : LavaboDTO = body.0.into();
-    let result = lavabo_controlador.crear_lavabo(lavabo_dto).await;
+pub async fn post_crear_lavabo(
+    State(lavabo_controlador) : State<Arc<dyn LavaboController>>,
+    Extension(claims): Extension<AuthDataDTO>,
+    TypedMultipart(body): TypedMultipart<CreateLavaboRequest>
+) -> Result<Response, LavaboErrors> {
+    let (mut lavabo_dto, imatges) : (LavaboDTO, Vec<FieldData<NamedTempFile>>) = body.into();
+    lavabo_dto.creador_id = Uuid::parse_str(&claims.sub).unwrap();
+    let result = lavabo_controlador.crear_lavabo(lavabo_dto,imatges,claims).await;
     match result {
         Ok(())=>{
             Ok((StatusCode::CREATED, "Lavabo Creat corectament").into_response())
@@ -44,7 +51,12 @@ pub async fn post_crear_lavabo(State(lavabo_controlador) : State<Arc<dyn LavaboC
     }
 }
 
-pub async fn put_actualitzar_lavabo(State(lavabo_controlador) : State<Arc<dyn LavaboController>>, id : Path<Uuid>, body : Json<LavaboDTO>) -> Result<Json<LavaboDTO>, LavaboErrors> {
+pub async fn put_actualitzar_lavabo(
+    State(lavabo_controlador) : State<Arc<dyn LavaboController>>, 
+    id : Path<Uuid>,
+    Extension(claims): Extension<AuthDataDTO>, 
+    body : Json<LavaboDTO>
+) -> Result<Json<LavaboDTO>, LavaboErrors> {
     let result = lavabo_controlador.actualitzar_lavabo(*id, body.0).await;
     match result {
         Ok(lavabo) => Ok(Json(lavabo)),
