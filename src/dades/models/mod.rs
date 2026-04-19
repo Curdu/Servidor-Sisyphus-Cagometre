@@ -3,3 +3,4 @@ pub(crate) mod lavabo;
 pub(crate) mod rols;
 pub(crate) mod resenya;
 pub(crate) mod etiqueta;
+pub(crate) mod imatge;

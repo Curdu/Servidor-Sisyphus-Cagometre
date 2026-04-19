@@ -34,7 +34,7 @@ impl LavaboRepository for PostgresLavaboRepository {
         }
     }
     async fn crear_lavabo(&self,lavabo : Lavabo) -> Result<(), LavaboErrors>{
-        let sql_query = r#"INSERT INTO lavabo (id,created_at,puntuacio_mitja,descripcio, nombre_resenyes, titol) VALUES ($1,$2,$3,$4,$5,$6)"#;
+        let sql_query = r#"INSERT INTO lavabo (id,created_at,puntuacio_mitja,descripcio, nombre_resenyes, titol, creador_id) VALUES ($1,$2,$3,$4,$5,$6,$7)"#;
 
         let result = query(sql_query)
             .bind(lavabo.id.clone())
@@ -43,6 +43,7 @@ impl LavaboRepository for PostgresLavaboRepository {
             .bind(lavabo.descripcio)
             .bind(lavabo.nombre_resenyes)
             .bind(lavabo.titol)
+            .bind(lavabo.creador_id)
             .execute(&self.bd).await;
 
                 match result {
@@ -133,15 +134,23 @@ impl LavaboRepository for PostgresLavaboRepository {
             l.titol, 
             l.puntuacio_mitja, 
             l.nombre_resenyes,
+            l.creador_id,
             COALESCE(
                 JSON_AGG(
                     JSON_BUILD_OBJECT('id', e.id, 'nom', e.nom, 'created_at', e.created_at)
                 ) FILTER (WHERE e.id IS NOT NULL),
                  '[]'
-            ) AS etiquetes
+            ) AS etiquetes,
+            COALESCE(
+                JSON_AGG(
+                    JSON_BUILD_OBJECT('lavabo_id', il.lavabo_id, 'path', il.path, 'created_at', il.created_at)
+                ) FILTER (WHERE il.lavabo_id IS NOT NULL),
+                 '[]'
+            ) AS imatges
         FROM lavabo l 
         LEFT JOIN lavabo_etiqueta le ON l.id = le.id_lavabo
         LEFT JOIN etiqueta e ON le.id_etiqueta = e.id
+        LEFT JOIN imatge_lavabo il ON l.id = il.lavabo_id
         GROUP BY l.id"#;
 
         let result = query_as::<_,LavaboAmbEtiquetes>(sql_query)
