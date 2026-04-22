@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
 use uuid::Uuid;
 
-use crate::serveis::dtos::lavabo_dto::LavaboDTO;
+use crate::{dades::models::resenya::Resenya, serveis::dtos::lavabo_dto::LavaboDTO};
 
 use super::etiqueta::Etiqueta;
 
@@ -53,4 +53,21 @@ impl LavaboImatge {
     pub fn get_public_url (&self) -> String {
         format!("https://gcpxeolootoyuomnrpfu.supabase.co/storage/v1/object/public/lavabo_images/{}/{}", &self.lavabo_id, &self.path)
     }
+}
+
+#[derive(Debug,FromRow)]
+pub(crate) struct LavaboDetallat {
+    pub(crate) id: Uuid,
+    pub(crate) descripcio: String,
+    pub(crate) titol: String,
+    pub(crate) puntuacio_mitja: f32,
+    pub(crate) nombre_resenyes: i64,
+    pub(crate) created_at: DateTime<Utc>,
+    #[sqlx(json)]
+    pub(crate) etiquetes: Vec<Etiqueta>,
+    #[sqlx(json)]
+    pub(crate) imatges: Vec<LavaboImatge>,
+    pub(crate) creador_id: Uuid,
+    #[sqlx(json)]
+    pub(crate) resenyes: Vec<Resenya>    
 }
