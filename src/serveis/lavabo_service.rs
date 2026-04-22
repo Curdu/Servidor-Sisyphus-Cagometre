@@ -6,7 +6,7 @@ use chrono::Utc;
 use tempfile::NamedTempFile;
 use uuid::Uuid;
 
-use crate::{dades::{models::{imatge::StorageImatge, lavabo::LavaboImatge}, repositoris::traits::{image_repository::ImatgesRepository, lavabo_imatge_repository::LavaboImatgeRepository, lavabo_repository::LavaboRepository}}, errors::{lavabo_errors::LavaboErrors, storage_errors::StorageError}, serveis::dtos::lavabo_dto::LavaboDTO};
+use crate::{dades::{models::{imatge::StorageImatge, lavabo::LavaboImatge, resenya::Resenya}, repositoris::traits::{compartit::irepository::IRepository, image_repository::ImatgesRepository, lavabo_imatge_repository::LavaboImatgeRepository, lavabo_repository::LavaboRepository}}, errors::{lavabo_errors::LavaboErrors, storage_errors::StorageError}, serveis::dtos::lavabo_dto::{LavaboDTO, LavaboDetallatDTO}};
 
 use super::dtos::{auth_dto::AuthDataDTO, lavabo_dto::LavaboAmbEtiquetesDTO};
 
@@ -18,6 +18,7 @@ pub(crate) trait LavaboService: Sync + Send {
     async fn eliminar_lavabo(&self, id: Uuid) -> Result<(), LavaboErrors>;
     async fn obte_tots_lavabos(&self) -> Result<Vec<LavaboDTO>, LavaboErrors>;
     async fn obte_tots_lavabos_amb_etiquetes(&self) -> Result<Vec<LavaboAmbEtiquetesDTO>, LavaboErrors>;
+    async fn obte_lavabo_detallat_per_id(&self, id: Uuid) -> Result<LavaboDetallatDTO, LavaboErrors>;
 }
 
 pub(crate) struct  LavaboServei {
@@ -98,6 +99,11 @@ impl LavaboService for LavaboServei {
     async fn obte_tots_lavabos_amb_etiquetes(&self) -> Result<Vec<LavaboAmbEtiquetesDTO>, LavaboErrors>{
         let lavabos_amb_etiquetes = self.lavabo_repository.obte_tots_lavabos_amb_etiquetes().await?;
         Ok(lavabos_amb_etiquetes.into_iter().map(Into::into).collect())        
+    }
+
+    async fn obte_lavabo_detallat_per_id(&self, id: Uuid) -> Result<LavaboDetallatDTO, LavaboErrors> {
+        let lavabo = self.lavabo_repository.obte_lavabo_detallat_per_id(id).await?;
+        Ok(lavabo.into())
     }
     
 }

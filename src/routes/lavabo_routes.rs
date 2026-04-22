@@ -5,7 +5,7 @@ use axum_typed_multipart::{FieldData, TypedMultipart};
 use tempfile::NamedTempFile;
 use uuid::{Uuid};
 
-use crate::{controladors::lavabo_controller::LavaboController, errors::lavabo_errors::LavaboErrors, serveis::dtos::{auth_dto::{AuthDataDTO, AuthToken}, lavabo_dto::{LavaboAmbEtiquetesDTO, LavaboDTO}}, state::SECRET_KEY};
+use crate::{controladors::lavabo_controller::LavaboController, errors::lavabo_errors::LavaboErrors, serveis::dtos::{auth_dto::{AuthDataDTO, AuthToken}, lavabo_dto::{LavaboAmbEtiquetesDTO, LavaboDTO, LavaboDetallatDTO}}, state::SECRET_KEY};
 
 use super::extractors::{ lavabo_extractors::CreateLavaboRequest};
 
@@ -18,6 +18,7 @@ pub fn get_lavabo_router(lavabo_controller : Arc<dyn LavaboController>) -> Route
     .route("/{id}", delete(delete_eliminar_lavabo))
     .route("/", get(get_tots_lavabos))
     .route("/previews", get(get_tots_lavabos_amb_etiquetes))
+    .route("/detall/{id}", get(get_lavabo_detallat_per_id))
     .with_state(lavabo_controller.clone())
 }
 
@@ -79,4 +80,8 @@ pub async fn get_tots_lavabos(State(lavabo_controlador) : State<Arc<dyn LavaboCo
 
 pub async fn get_tots_lavabos_amb_etiquetes(State(lavabo_controlador) : State<Arc<dyn LavaboController>>) -> Result<Json<Vec<LavaboAmbEtiquetesDTO>>, LavaboErrors> {
     Ok(Json(lavabo_controlador.get_tots_lavabos_amb_etiqueta().await?))
+}
+
+pub async fn get_lavabo_detallat_per_id(State(lavabo_controlador) : State<Arc<dyn LavaboController>>,  id : Path<Uuid>) -> Result<Json<LavaboDetallatDTO>, LavaboErrors> {
+    Ok(Json(lavabo_controlador.get_lavabo_detallat_per_id(*id).await?))
 }
