@@ -1,10 +1,11 @@
 use chrono::{DateTime, Utc};
+use serde::Deserialize;
 use sqlx::prelude::FromRow;
 use uuid::{Uuid};
 
 use crate::serveis::dtos::resenya_dto::ResenyaDTO;
 
-#[derive(FromRow)]
+#[derive(FromRow, Debug, Deserialize)]
 pub(crate) struct Resenya {
     pub(crate) id: Uuid,
     pub(crate) id_lavabo: Uuid,

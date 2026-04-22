@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::{dades::models::{lavabo::{Lavabo, LavaboAmbEtiquetes}}, routes::extractors::lavabo_extractors::CreateLavaboRequest};
+use crate::{dades::models::{etiqueta::Etiqueta, lavabo::{Lavabo, LavaboAmbEtiquetes, LavaboDetallat, LavaboImatge}, resenya::Resenya}, routes::extractors::lavabo_extractors::CreateLavaboRequest, serveis::dtos::resenya_dto::ResenyaDTO};
 
 use super::etiqueta_dto::EtiquetaDTO;
 
@@ -55,6 +55,37 @@ impl From<LavaboAmbEtiquetes> for LavaboAmbEtiquetesDTO {
             etiquetes: value.etiquetes.into_iter().map(Into::into).collect(),
             imatges: value.imatges.into_iter().map(|l| l.get_public_url()).collect(),
             creador_id: value.creador_id
+        }
+    }
+}
+#[derive(Serialize,Deserialize, Debug)]
+pub(crate) struct LavaboDetallatDTO {
+    pub(crate) id: Uuid,
+    pub(crate) descripcio: String,
+    pub(crate) titol: String,
+    pub(crate) puntuacio_mitja: f32,
+    pub(crate) nombre_resenyes: i64,
+    pub(crate) created_at: DateTime<Utc>,
+    pub(crate) creador_id: Uuid,
+    pub(crate) etiquetes: Vec<EtiquetaDTO>,
+    pub(crate) imatges: Vec<String>,
+    pub(crate) resenyes: Vec<ResenyaDTO>
+
+}
+
+impl From<LavaboDetallat> for LavaboDetallatDTO {
+    fn from(value: LavaboDetallat) -> Self {
+        Self { 
+            id: value.id, 
+            descripcio: value.descripcio, 
+            titol: value.titol, 
+            puntuacio_mitja: value.puntuacio_mitja, 
+            nombre_resenyes: value.nombre_resenyes, 
+            created_at: value.created_at, 
+            creador_id: value.creador_id, 
+            etiquetes: value.etiquetes.into_iter().map(Etiqueta::into).collect(), 
+            imatges: value.imatges.into_iter().map(|i| i.get_public_url()).collect(), 
+            resenyes: value.resenyes.into_iter().map(Resenya::into).collect() 
         }
     }
 }

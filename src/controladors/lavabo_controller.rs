@@ -4,7 +4,7 @@ use tempfile::NamedTempFile;
 use std::sync::Arc;
 use uuid::Uuid;
 
-use crate::{errors::lavabo_errors::LavaboErrors, serveis::{dtos::{auth_dto::AuthDataDTO, lavabo_dto::{LavaboAmbEtiquetesDTO, LavaboDTO}}, lavabo_service::LavaboService}};
+use crate::{errors::lavabo_errors::LavaboErrors, serveis::{dtos::{auth_dto::AuthDataDTO, lavabo_dto::{LavaboAmbEtiquetesDTO, LavaboDTO, LavaboDetallatDTO}}, lavabo_service::LavaboService}};
 
 #[async_trait]
 pub(crate) trait LavaboController: Sync + Send {
@@ -14,6 +14,7 @@ pub(crate) trait LavaboController: Sync + Send {
     async fn eliminar_lavabo(&self,id: Uuid) -> Result<(), LavaboErrors>;
     async fn get_tots_lavabos(&self) -> Result<Vec<LavaboDTO>, LavaboErrors>;
     async fn get_tots_lavabos_amb_etiqueta(&self) -> Result<Vec<LavaboAmbEtiquetesDTO>, LavaboErrors>;
+    async fn get_lavabo_detallat_per_id(&self, id: Uuid) -> Result<LavaboDetallatDTO, LavaboErrors>; 
 }
 
 pub(crate) struct LavaboControlador {
@@ -46,4 +47,8 @@ impl LavaboController for LavaboControlador {
     async fn get_tots_lavabos_amb_etiqueta(&self) -> Result<Vec<LavaboAmbEtiquetesDTO>, LavaboErrors> {
         self.lavabo_service.obte_tots_lavabos_amb_etiquetes().await
     }
+    async fn get_lavabo_detallat_per_id(&self, id: Uuid) -> Result<LavaboDetallatDTO, LavaboErrors> {
+        self.lavabo_service.obte_lavabo_detallat_per_id(id).await
+    }
+
 }
