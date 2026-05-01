@@ -5,7 +5,7 @@ use rand::{RngExt, distr::Alphanumeric};
 use sha2::{Digest, Sha512};
 use uuid::Uuid;
 
-use crate::{dades::{models::usuari::{Usuari}, repositoris::traits::user_repository::UserRepository}, errors::usuari_errors::UsuariErrors, serveis::dtos::usuari_dto::UsuariDTO};
+use crate::{dades::{models::{ usuari::Usuari}, repositoris::traits::user_repository::UserRepository}, errors::usuari_errors::UsuariErrors, serveis::dtos::{perfil_dto::PerfilDTO, usuari_dto::UsuariDTO}};
 
 #[async_trait]
 pub(crate) trait UserService: Send + Sync {
@@ -16,6 +16,7 @@ pub(crate) trait UserService: Send + Sync {
     async fn actualitzar_usuari(&self ,id: Uuid, usuari: UsuariDTO) -> Result<(),UsuariErrors>;
     async fn actualitzar_usuari_amb_retorn(&self ,id: Uuid, usuari: UsuariDTO) -> Result<UsuariDTO, UsuariErrors>;
     async fn eliminar_usuari(&self ,id: Uuid) -> Result<(),UsuariErrors>;
+    async fn obtenir_perfil_per_id(&self, id: Uuid) -> Result<PerfilDTO, UsuariErrors>;
 }
 
 pub(crate) struct UserServei {
@@ -95,6 +96,11 @@ impl UserService for UserServei {
     }
     async fn eliminar_usuari(&self ,id: Uuid) -> Result<(),UsuariErrors> {
         self.user_repository.elimina_usuari(id).await
+    }
+    async fn obtenir_perfil_per_id(&self, id: Uuid) -> Result<PerfilDTO, UsuariErrors> {
+        let perfil = self.user_repository.obtenir_perfil_per_id(id).await?;
+
+        Ok(perfil.into())
     }
 
 }

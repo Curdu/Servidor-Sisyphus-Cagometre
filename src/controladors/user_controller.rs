@@ -3,7 +3,7 @@ use std::{ sync::Arc};
 use async_trait::async_trait;
 use uuid::Uuid;
 
-use crate::{errors::usuari_errors::UsuariErrors, serveis::{dtos::usuari_dto::UsuariDTO, user_service::UserService}};
+use crate::{errors::usuari_errors::UsuariErrors, serveis::{dtos::{auth_dto::AuthDataDTO, perfil_dto::PerfilDTO, usuari_dto::UsuariDTO}, user_service::UserService}};
 
 
 
@@ -13,6 +13,7 @@ pub(crate) trait UserController: Send + Sync {
     async fn actualitzar_usuari(&self ,id: Uuid,usuari_dto: UsuariDTO) -> Result<UsuariDTO, UsuariErrors>;
     async fn eliminar_usuari(&self ,id: Uuid) -> Result<(), UsuariErrors>;
     async fn crear_usuari(&self, usuari_dto: UsuariDTO) -> Result<(), UsuariErrors>;
+    async fn obte_perfil_per_id(&self, id: Uuid, usr_data: AuthDataDTO) -> Result<PerfilDTO, UsuariErrors>;
 }
 
 
@@ -43,6 +44,13 @@ impl UserController for UserControlador {
     }
     async fn crear_usuari(&self, usuari_dto: UsuariDTO) -> Result<(), UsuariErrors> {
         self.usuari_service.crear_usuari(usuari_dto).await
+    }
+    async fn obte_perfil_per_id(&self, id: Uuid, usr_data: AuthDataDTO) -> Result<PerfilDTO, UsuariErrors> {
+        
+        if usr_data.sub != id.to_string() {
+            return Err(UsuariErrors::NotEnoughtPermission("No es pot accedir al perfil d'un altre usuari".to_string()))
+        }
+        self.usuari_service.obtenir_perfil_per_id(id).await
     }
 
 }
