@@ -77,7 +77,9 @@ impl AuthService for AuthServei {
     }
     async fn registre(&self, usuari_dto : UsuariDTO) -> Result<(), UsuariErrors>{
         let (hash, salt) = generar_hash(&usuari_dto.contrasenya);
-        let usuari = Usuari::new(usuari_dto.id, usuari_dto.correu, usuari_dto.nom , usuari_dto.cognoms, hash, salt, usuari_dto.created_at, usuari_dto.rol);
+        let mut usuari : Usuari = usuari_dto.into();
+        usuari.hash = hash;
+        usuari.salt = salt;
         self.usuari_repository.crear_usuari(usuari).await
     }
 }
