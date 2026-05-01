@@ -16,17 +16,27 @@ pub(crate) struct Usuari {
     pub(crate) hash: String,
     pub(crate) salt: String,
     pub(crate) created_at: DateTime<Utc>,
-    pub(crate) rol: UsuariRol
+    pub(crate) rol: UsuariRol,
+    pub(crate) imatge_url: Option<String>
 }
 
 impl Usuari {
-    pub fn new(id: Uuid, correu: String, nom: String, cognoms: String, hash: String, salt: String, created_at: DateTime<Utc>, rol: UsuariRol) -> Self {
-        Self { id, correu, nom, cognoms, hash, salt, created_at, rol }
+    pub fn new(id: Uuid, correu: String, nom: String, cognoms: String, hash: String, salt: String, created_at: DateTime<Utc>, rol: UsuariRol, imatge_url: Option<String>) -> Self {
+        Self { id, correu, nom, cognoms, hash, salt, created_at, rol , imatge_url}
     }
 }
 
 impl From<UsuariDTO> for Usuari {
     fn from(value: UsuariDTO) -> Self {
-        Self { id: value.id, correu: value.correu, nom: value.nom, cognoms: value.cognoms, hash: "".to_string(), salt: "".to_string(), created_at: value.created_at , rol: value.rol}
+        Self { id: value.id, 
+            correu: value.correu, 
+            nom: value.nom, 
+            cognoms: value.cognoms, 
+            hash: "".to_string(), 
+            salt: "".to_string(), 
+            created_at: value.created_at , 
+            rol: value.rol,
+            imatge_url: value.imatge_url
+        }
     }
 }
