@@ -13,12 +13,12 @@ pub(crate) struct UsuariDTO {
     pub(crate) contrasenya: String,
     pub(crate) created_at: DateTime<Utc>,
     pub(crate) rol : UsuariRol,
-    pub(crate) image_url :Option<String>
+    pub(crate) imatge_url :Option<String>
 }
 
 impl UsuariDTO {
-    pub fn new(id: Uuid, correu: String, nom: String, cognoms: String, contrasenya: String, created_at: DateTime<Utc>, rol: UsuariRol, image_url: Option<String>) -> Self {
-        Self { id, correu, nom, cognoms, contrasenya, created_at , rol, image_url}
+    pub fn new(id: Uuid, correu: String, nom: String, cognoms: String, contrasenya: String, created_at: DateTime<Utc>, rol: UsuariRol, imatge_url: Option<String>) -> Self {
+        Self { id, correu, nom, cognoms, contrasenya, created_at , rol, imatge_url}
     }
 }
 
@@ -32,7 +32,7 @@ impl From<Usuari> for UsuariDTO {
             contrasenya: "".to_string(), 
             created_at: value.created_at,
             rol: value.rol,
-            image_url: value.image_url
+            imatge_url: value.imatge_url
         }
     }
 }

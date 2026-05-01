@@ -4,3 +4,4 @@ pub(crate) mod rols;
 pub(crate) mod resenya;
 pub(crate) mod etiqueta;
 pub(crate) mod imatge;
+pub(crate) mod perfil;
