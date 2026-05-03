@@ -151,6 +151,32 @@ impl UserRepository for PostgresUserRepository {
             Err(err) => Err(UsuariErrors::ServerError(err.to_string()))
         }
     }
+    async fn actualitzar_perfil(&self, id: Uuid, perfil: Perfil) -> Result<(), UsuariErrors> {
+        let sql_query: &str = "UPDATE usuari SET nom = $1, cognoms = $2, imatge_url = $3 WHERE id = $4";
+
+        let result = query(sql_query)
+            .bind(perfil.nom)
+            .bind(perfil.cognoms)
+            .bind(perfil.imatge_url)
+            .bind(id)
+            .execute(&self.bd).await;
+
+        
+        match result {
+            Ok(response) => {
+                if response.rows_affected() == 0 {
+                   Err(UsuariErrors::UsuariNotFound("L'usuari que es volia modificar no s'ha trobat".to_string())) 
+                }else {
+                    Ok(())
+                }
+            },
+            Err(error) =>{
+                Err(UsuariErrors::ServerError(error.to_string()))
+            }
+            
+        }
+    }
+
 }
 
 impl PostgresUserRepository {

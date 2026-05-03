@@ -17,7 +17,7 @@ pub(crate) async fn obtenir_controladors(type_bbdd : String, url_bbdd : String) 
         //Repositoris
         let usuari_repository = Arc::new(PostgresUserRepository::new(pool.clone()));
         let lavabo_repository = PostgresLavaboRepository::new(pool.clone());
-        let image_repository = SupabaseImatgesRepository{client: Arc::new(Mutex::new(client))};
+        let image_repository = Arc::new(SupabaseImatgesRepository{client: Arc::new(Mutex::new(client))});
         let lavabo_imatge_repository = PostgresLavaboImatgeRepository::new(pool.clone());
         let auth_service = AuthServei::new(usuari_repository.clone());
         let resenya_repository = Arc::new(PostgresResenyaRepository::new(pool.clone()));
@@ -26,8 +26,8 @@ pub(crate) async fn obtenir_controladors(type_bbdd : String, url_bbdd : String) 
         //Serveis
         let etiqueta_service = Arc::new(EtiquetaServei::new(etiqueta_repository));
         let resenya_service = Arc::new(ResenyaServei::new(resenya_repository));
-        let lavabo_service = LavaboServei::new(Arc::new(lavabo_repository), Arc::new(image_repository), Arc::new(lavabo_imatge_repository));
-        let usuari_service = UserServei::new(usuari_repository.clone());
+        let lavabo_service = LavaboServei::new(Arc::new(lavabo_repository), image_repository.clone(), Arc::new(lavabo_imatge_repository));
+        let usuari_service = UserServei::new(usuari_repository.clone(), image_repository.clone());
 
 
 

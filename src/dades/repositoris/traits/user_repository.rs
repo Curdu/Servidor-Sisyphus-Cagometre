@@ -13,4 +13,5 @@ pub(crate)  trait UserRepository: Sync + Send {
     async fn actualitza_usuari(&self ,id: Uuid, nou_usuari: Usuari) -> Result<(),UsuariErrors>;
     async fn elimina_usuari(&self ,id: Uuid) -> Result<(), UsuariErrors>;
     async fn obtenir_perfil_per_id(&self, id: Uuid) -> Result<Perfil, UsuariErrors>;
+    async fn actualitzar_perfil(&self, id: Uuid, perfil: Perfil) -> Result<(), UsuariErrors>;
 }
