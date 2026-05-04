@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::{dades::models::{etiqueta::Etiqueta, lavabo::{Lavabo, LavaboAmbEtiquetes, LavaboDetallat, LavaboImatge}, resenya::Resenya}, routes::extractors::lavabo_extractors::CreateLavaboRequest, serveis::dtos::resenya_dto::ResenyaDTO};
+use crate::{dades::models::{etiqueta::Etiqueta, lavabo::{Lavabo, LavaboAmbEtiquetes, LavaboDetallat}, resenya::Resenya}, routes::extractors::lavabo_extractors::CreateLavaboRequest, serveis::dtos::resenya_dto::ResenyaDTO};
 
 use super::etiqueta_dto::EtiquetaDTO;
 

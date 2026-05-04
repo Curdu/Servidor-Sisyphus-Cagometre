@@ -30,7 +30,7 @@ async fn login(State(auth_controller) : State<Arc<dyn AuthController>>, body : J
 }
 
 async fn registre(State(auth_controller) : State<Arc<dyn AuthController>>, body : Json<CrearUsuariRequest>) -> Result<Response, UsuariErrors> {
-    let usuari_dto = UsuariDTO::new(Uuid::new_v4(), body.correu.clone(), body.nom.clone(), body.cognoms.clone(), body.contrasenya.clone(), Utc::now(), UsuariRol::USUARI);
+    let usuari_dto = UsuariDTO::new(Uuid::new_v4(), body.correu.clone(), body.nom.clone(), body.cognoms.clone(), body.contrasenya.clone(), Utc::now(), UsuariRol::USUARI, None);
     let result = auth_controller.registre(usuari_dto).await;
     match result {
         Ok(_) => {
