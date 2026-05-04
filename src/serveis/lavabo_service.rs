@@ -6,7 +6,7 @@ use chrono::Utc;
 use tempfile::NamedTempFile;
 use uuid::Uuid;
 
-use crate::{dades::{models::{imatge::StorageImatge, lavabo::LavaboImatge, resenya::Resenya}, repositoris::traits::{compartit::irepository::IRepository, image_repository::ImatgesRepository, lavabo_imatge_repository::LavaboImatgeRepository, lavabo_repository::LavaboRepository}}, errors::{lavabo_errors::LavaboErrors, storage_errors::StorageError}, serveis::dtos::lavabo_dto::{LavaboDTO, LavaboDetallatDTO}};
+use crate::{dades::{models::{imatge::StorageImatge, lavabo::LavaboImatge}, repositoris::traits::{ image_repository::ImatgesRepository, lavabo_imatge_repository::LavaboImatgeRepository, lavabo_repository::LavaboRepository}}, errors::{lavabo_errors::LavaboErrors, storage_errors::StorageError}, serveis::dtos::lavabo_dto::{LavaboDTO, LavaboDetallatDTO}};
 
 use super::dtos::{auth_dto::AuthDataDTO, lavabo_dto::LavaboAmbEtiquetesDTO};
 

@@ -4,6 +4,7 @@ use sqlx::{Error, PgPool};
 use uuid::Uuid;
 use sqlx::{query_as, query};
 
+use crate::dades::models::perfil::Perfil;
 use crate::dades::repositoris::traits::user_repository::UserRepository;
 use crate::dades::models::usuari::Usuari;
 use crate::errors::usuari_errors::UsuariErrors;
@@ -132,6 +133,50 @@ impl UserRepository for PostgresUserRepository {
             
         }
     }
+    async fn obtenir_perfil_per_id(&self, id: Uuid) -> Result<Perfil, UsuariErrors> {
+        let sql_query = r#"SELECT id, nom, cognoms, imatge_url FROM usuari WHERE id = $1"#;
+
+        let result = query_as::<_,Perfil>(sql_query)
+            .bind(id)
+            .fetch_optional(&self.bd)
+            .await;
+
+        match result {
+            Ok(opt) => {
+                match opt {
+                    Some(perfil) => Ok(perfil),
+                    None => Err(UsuariErrors::UsuariNotFound(format!("L'usuari amb l'id {} no s'ha trobat", id)))
+                }
+            },
+            Err(err) => Err(UsuariErrors::ServerError(err.to_string()))
+        }
+    }
+    async fn actualitzar_perfil(&self, id: Uuid, perfil: Perfil) -> Result<(), UsuariErrors> {
+        let sql_query: &str = "UPDATE usuari SET nom = $1, cognoms = $2, imatge_url = $3 WHERE id = $4";
+
+        let result = query(sql_query)
+            .bind(perfil.nom)
+            .bind(perfil.cognoms)
+            .bind(perfil.imatge_url)
+            .bind(id)
+            .execute(&self.bd).await;
+
+        
+        match result {
+            Ok(response) => {
+                if response.rows_affected() == 0 {
+                   Err(UsuariErrors::UsuariNotFound("L'usuari que es volia modificar no s'ha trobat".to_string())) 
+                }else {
+                    Ok(())
+                }
+            },
+            Err(error) =>{
+                Err(UsuariErrors::ServerError(error.to_string()))
+            }
+            
+        }
+    }
+
 }
 
 impl PostgresUserRepository {

@@ -5,7 +5,7 @@ use axum_typed_multipart::{FieldData, TypedMultipart};
 use tempfile::NamedTempFile;
 use uuid::{Uuid};
 
-use crate::{controladors::lavabo_controller::LavaboController, errors::lavabo_errors::LavaboErrors, serveis::dtos::{auth_dto::{AuthDataDTO, AuthToken}, lavabo_dto::{LavaboAmbEtiquetesDTO, LavaboDTO, LavaboDetallatDTO}}, state::SECRET_KEY};
+use crate::{controladors::lavabo_controller::LavaboController, errors::lavabo_errors::LavaboErrors, serveis::dtos::{auth_dto::{AuthDataDTO}, lavabo_dto::{LavaboAmbEtiquetesDTO, LavaboDTO, LavaboDetallatDTO}}};
 
 use super::extractors::{ lavabo_extractors::CreateLavaboRequest};
 
