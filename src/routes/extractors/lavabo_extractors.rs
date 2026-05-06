@@ -11,12 +11,22 @@ pub(crate) struct CreateLavaboRequest {
     pub(crate) titol: String,
     pub(crate) descripcio: String,
     #[form_data(limit= "unlimited")]
-    pub(crate) imatges : Vec<FieldData<NamedTempFile>>
+    pub(crate) imatges : Vec<FieldData<NamedTempFile>>,
+    pub(crate) localitzacio: String
 }
 
 impl From<CreateLavaboRequest> for (LavaboDTO, Vec<FieldData<NamedTempFile>>) {
     fn from(value: CreateLavaboRequest) -> Self {
-        let lavabo_dto = LavaboDTO{id: Uuid::new_v4(), descripcio: value.descripcio, titol: value.titol, puntuacio_mitja: 0.0, nombre_resenyes: 0, created_at: Utc::now(), creador_id: Uuid::nil()};
+        let lavabo_dto = LavaboDTO{
+            id: Uuid::new_v4(), 
+            descripcio: value.descripcio, 
+            titol: value.titol, 
+            puntuacio_mitja: 0.0, 
+            nombre_resenyes: 0, 
+            created_at: Utc::now(), 
+            creador_id: Uuid::nil(),
+            localitzacio: value.localitzacio
+        };
         (lavabo_dto,value.imatges)
     }
 }
