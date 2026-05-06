@@ -34,7 +34,7 @@ impl LavaboRepository for PostgresLavaboRepository {
         }
     }
     async fn crear_lavabo(&self,lavabo : Lavabo) -> Result<(), LavaboErrors>{
-        let sql_query = r#"INSERT INTO lavabo (id,created_at,puntuacio_mitja,descripcio, nombre_resenyes, titol, creador_id) VALUES ($1,$2,$3,$4,$5,$6,$7)"#;
+        let sql_query = r#"INSERT INTO lavabo (id,created_at,puntuacio_mitja,descripcio, nombre_resenyes, titol, creador_id, localitzacio) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"#;
 
         let result = query(sql_query)
             .bind(lavabo.id.clone())
@@ -44,6 +44,7 @@ impl LavaboRepository for PostgresLavaboRepository {
             .bind(lavabo.nombre_resenyes)
             .bind(lavabo.titol)
             .bind(lavabo.creador_id)
+            .bind(lavabo.localitzacio)
             .execute(&self.bd).await;
 
                 match result {
@@ -135,6 +136,7 @@ impl LavaboRepository for PostgresLavaboRepository {
             l.puntuacio_mitja, 
             l.nombre_resenyes,
             l.creador_id,
+            l.localitzacio,
             (
                 SELECT COALESCE(
                     JSON_AGG(
@@ -177,7 +179,7 @@ impl LavaboRepository for PostgresLavaboRepository {
     l.puntuacio_mitja, 
     l.nombre_resenyes,
     l.creador_id,
-    
+    l.localitzacio,
     
     (
         SELECT COALESCE(
@@ -205,10 +207,11 @@ impl LavaboRepository for PostgresLavaboRepository {
     (
         SELECT COALESCE(
             JSON_AGG(
-                JSON_BUILD_OBJECT('id', r.id, 'id_lavabo', r.id_lavabo, 'created_at', r.created_at, 'id_usuari', r.id_usuari, 'comentari', r.comentari, 'puntuacio', r.puntuacio)
+                JSON_BUILD_OBJECT('id', r.id, 'id_lavabo', r.id_lavabo, 'created_at', r.created_at, 'id_usuari', r.id_usuari, 'comentari', r.comentari, 'puntuacio', r.puntuacio, 'nom_usuari', usuari.nom, 'imatge_perfil', usuari.imatge_url)
             ), '[]'
         )
         FROM resenya r
+        JOIN usuari ON usuari.id = r.id_usuari
         WHERE r.id_lavabo = l.id
     ) AS resenyes
 

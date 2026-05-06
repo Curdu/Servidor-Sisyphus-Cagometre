@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
 use uuid::Uuid;
 
-use crate::{dades::models::resenya::Resenya, serveis::dtos::lavabo_dto::LavaboDTO};
+use crate::{dades::models::resenya::{ResenyaAmbPerfil}, serveis::dtos::lavabo_dto::LavaboDTO};
 
 use super::etiqueta::Etiqueta;
 
@@ -15,12 +15,22 @@ pub(crate) struct Lavabo {
     pub(crate) puntuacio_mitja: f32,
     pub(crate) nombre_resenyes: i64,
     pub(crate) created_at: DateTime<Utc>,
-    pub(crate) creador_id: Uuid
+    pub(crate) creador_id: Uuid,
+    pub(crate) localitzacio: String
 }
 
 impl From<LavaboDTO> for Lavabo {
     fn from(value: LavaboDTO) -> Self {
-        Self { id: value.id, descripcio: value.descripcio, puntuacio_mitja: value.puntuacio_mitja, created_at: value.created_at, titol: value.titol, nombre_resenyes: value.nombre_resenyes, creador_id: value.creador_id }
+        Self { 
+            id: value.id, 
+            descripcio: value.descripcio, 
+            puntuacio_mitja: value.puntuacio_mitja, 
+            created_at: value.created_at, 
+            titol: value.titol, 
+            nombre_resenyes: value.nombre_resenyes, 
+            creador_id: value.creador_id,
+            localitzacio: value.localitzacio
+        }
     }
 }
 #[derive(Debug,FromRow)]
@@ -35,7 +45,9 @@ pub(crate) struct LavaboAmbEtiquetes {
     pub(crate) etiquetes: Vec<Etiqueta>,
     #[sqlx(json)]
     pub(crate) imatges: Vec<LavaboImatge>,
-    pub(crate) creador_id: Uuid
+    pub(crate) creador_id: Uuid,
+    pub(crate) localitzacio: String
+
 }
 
 #[derive(FromRow, Debug, Deserialize)]
@@ -69,5 +81,6 @@ pub(crate) struct LavaboDetallat {
     pub(crate) imatges: Vec<LavaboImatge>,
     pub(crate) creador_id: Uuid,
     #[sqlx(json)]
-    pub(crate) resenyes: Vec<Resenya>    
+    pub(crate) resenyes: Vec<ResenyaAmbPerfil>,
+    pub(crate) localitzacio: String
 }

@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::{dades::models::{etiqueta::Etiqueta, lavabo::{Lavabo, LavaboAmbEtiquetes, LavaboDetallat}, resenya::Resenya}, routes::extractors::lavabo_extractors::CreateLavaboRequest, serveis::dtos::resenya_dto::ResenyaDTO};
+use crate::{dades::models::{etiqueta::Etiqueta, lavabo::{Lavabo, LavaboAmbEtiquetes, LavaboDetallat}, resenya::{ ResenyaAmbPerfil}}, routes::extractors::lavabo_extractors::CreateLavaboRequest, serveis::dtos::resenya_dto::{ResenyaAmbPerfilDTO}};
 
 use super::etiqueta_dto::EtiquetaDTO;
 
@@ -14,19 +14,38 @@ pub(crate) struct LavaboDTO {
     pub(crate) puntuacio_mitja: f32,
     pub(crate) nombre_resenyes: i64,
     pub(crate) created_at: DateTime<Utc>,
-    pub(crate) creador_id: Uuid
+    pub(crate) creador_id: Uuid,
+    pub(crate) localitzacio: String
 }
 
 
 impl From<Lavabo> for LavaboDTO {
     fn from(value: Lavabo) -> Self {
-        Self { id: value.id, descripcio: value.descripcio, puntuacio_mitja: value.puntuacio_mitja, created_at: value.created_at, titol: value.titol, nombre_resenyes: value.nombre_resenyes, creador_id: value.creador_id}
+        Self { 
+            id: value.id, 
+            descripcio: value.descripcio, 
+            puntuacio_mitja: value.puntuacio_mitja, 
+            created_at: value.created_at, 
+            titol: value.titol, 
+            nombre_resenyes: value.nombre_resenyes, 
+            creador_id: value.creador_id,
+            localitzacio: value.localitzacio
+        }
     }
 }
 
 impl From<CreateLavaboRequest> for LavaboDTO {
     fn from(value: CreateLavaboRequest) -> Self {
-        Self { id: Uuid::new_v4(), descripcio: value.descripcio.clone(), titol: value.titol.clone(), puntuacio_mitja: 0.0, nombre_resenyes: 0, created_at: Utc::now() , creador_id: Uuid::nil()}
+        Self { 
+            id: Uuid::new_v4(), 
+            descripcio: value.descripcio.clone(), 
+            titol: value.titol.clone(), 
+            puntuacio_mitja: 0.0, 
+            nombre_resenyes: 0, 
+            created_at: Utc::now() , 
+            creador_id: Uuid::nil(),
+            localitzacio: value.localitzacio
+        }
     }
 }
 
@@ -40,7 +59,8 @@ pub(crate) struct LavaboAmbEtiquetesDTO {
     pub(crate) created_at: DateTime<Utc>,
     pub(crate) etiquetes: Vec<EtiquetaDTO>,
     pub(crate) imatges: Vec<String>,
-    pub(crate) creador_id: Uuid
+    pub(crate) creador_id: Uuid,
+    pub(crate) localitzacio: String
 }
 
 impl From<LavaboAmbEtiquetes> for LavaboAmbEtiquetesDTO {
@@ -54,7 +74,8 @@ impl From<LavaboAmbEtiquetes> for LavaboAmbEtiquetesDTO {
             created_at: value.created_at, 
             etiquetes: value.etiquetes.into_iter().map(Into::into).collect(),
             imatges: value.imatges.into_iter().map(|l| l.get_public_url()).collect(),
-            creador_id: value.creador_id
+            creador_id: value.creador_id,
+            localitzacio: value.localitzacio
         }
     }
 }
@@ -69,7 +90,8 @@ pub(crate) struct LavaboDetallatDTO {
     pub(crate) creador_id: Uuid,
     pub(crate) etiquetes: Vec<EtiquetaDTO>,
     pub(crate) imatges: Vec<String>,
-    pub(crate) resenyes: Vec<ResenyaDTO>
+    pub(crate) resenyes: Vec<ResenyaAmbPerfilDTO>,
+    pub(crate) localitzacio: String
 
 }
 
@@ -85,7 +107,8 @@ impl From<LavaboDetallat> for LavaboDetallatDTO {
             creador_id: value.creador_id, 
             etiquetes: value.etiquetes.into_iter().map(Etiqueta::into).collect(), 
             imatges: value.imatges.into_iter().map(|i| i.get_public_url()).collect(), 
-            resenyes: value.resenyes.into_iter().map(Resenya::into).collect() 
+            resenyes: value.resenyes.into_iter().map(ResenyaAmbPerfil::into).collect(),
+            localitzacio: value.localitzacio
         }
     }
 }
