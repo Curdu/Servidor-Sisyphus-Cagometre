@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
 use uuid::Uuid;
 
-use crate::{dades::models::resenya::Resenya, serveis::dtos::lavabo_dto::LavaboDTO};
+use crate::{dades::models::resenya::{ResenyaAmbPerfil}, serveis::dtos::lavabo_dto::LavaboDTO};
 
 use super::etiqueta::Etiqueta;
 
@@ -69,5 +69,5 @@ pub(crate) struct LavaboDetallat {
     pub(crate) imatges: Vec<LavaboImatge>,
     pub(crate) creador_id: Uuid,
     #[sqlx(json)]
-    pub(crate) resenyes: Vec<Resenya>    
+    pub(crate) resenyes: Vec<ResenyaAmbPerfil>    
 }

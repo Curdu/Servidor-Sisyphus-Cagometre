@@ -205,10 +205,11 @@ impl LavaboRepository for PostgresLavaboRepository {
     (
         SELECT COALESCE(
             JSON_AGG(
-                JSON_BUILD_OBJECT('id', r.id, 'id_lavabo', r.id_lavabo, 'created_at', r.created_at, 'id_usuari', r.id_usuari, 'comentari', r.comentari, 'puntuacio', r.puntuacio)
+                JSON_BUILD_OBJECT('id', r.id, 'id_lavabo', r.id_lavabo, 'created_at', r.created_at, 'id_usuari', r.id_usuari, 'comentari', r.comentari, 'puntuacio', r.puntuacio, 'nom_usuari', usuari.nom, 'imatge_perfil', usuari.imatge_url)
             ), '[]'
         )
         FROM resenya r
+        JOIN usuari ON usuari.id = r.id_usuari
         WHERE r.id_lavabo = l.id
     ) AS resenyes
 

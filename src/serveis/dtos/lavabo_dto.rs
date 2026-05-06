@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::{dades::models::{etiqueta::Etiqueta, lavabo::{Lavabo, LavaboAmbEtiquetes, LavaboDetallat}, resenya::Resenya}, routes::extractors::lavabo_extractors::CreateLavaboRequest, serveis::dtos::resenya_dto::ResenyaDTO};
+use crate::{dades::models::{etiqueta::Etiqueta, lavabo::{Lavabo, LavaboAmbEtiquetes, LavaboDetallat}, resenya::{ ResenyaAmbPerfil}}, routes::extractors::lavabo_extractors::CreateLavaboRequest, serveis::dtos::resenya_dto::{ResenyaAmbPerfilDTO}};
 
 use super::etiqueta_dto::EtiquetaDTO;
 
@@ -69,7 +69,7 @@ pub(crate) struct LavaboDetallatDTO {
     pub(crate) creador_id: Uuid,
     pub(crate) etiquetes: Vec<EtiquetaDTO>,
     pub(crate) imatges: Vec<String>,
-    pub(crate) resenyes: Vec<ResenyaDTO>
+    pub(crate) resenyes: Vec<ResenyaAmbPerfilDTO>
 
 }
 
@@ -85,7 +85,7 @@ impl From<LavaboDetallat> for LavaboDetallatDTO {
             creador_id: value.creador_id, 
             etiquetes: value.etiquetes.into_iter().map(Etiqueta::into).collect(), 
             imatges: value.imatges.into_iter().map(|i| i.get_public_url()).collect(), 
-            resenyes: value.resenyes.into_iter().map(Resenya::into).collect() 
+            resenyes: value.resenyes.into_iter().map(ResenyaAmbPerfil::into).collect() 
         }
     }
 }
