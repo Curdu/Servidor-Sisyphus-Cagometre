@@ -34,7 +34,7 @@ impl LavaboRepository for PostgresLavaboRepository {
         }
     }
     async fn crear_lavabo(&self,lavabo : Lavabo) -> Result<(), LavaboErrors>{
-        let sql_query = r#"INSERT INTO lavabo (id,created_at,puntuacio_mitja,descripcio, nombre_resenyes, titol, creador_id) VALUES ($1,$2,$3,$4,$5,$6,$7)"#;
+        let sql_query = r#"INSERT INTO lavabo (id,created_at,puntuacio_mitja,descripcio, nombre_resenyes, titol, creador_id, localitzacio) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)"#;
 
         let result = query(sql_query)
             .bind(lavabo.id.clone())
@@ -44,6 +44,7 @@ impl LavaboRepository for PostgresLavaboRepository {
             .bind(lavabo.nombre_resenyes)
             .bind(lavabo.titol)
             .bind(lavabo.creador_id)
+            .bind(lavabo.localitzacio)
             .execute(&self.bd).await;
 
                 match result {
@@ -135,6 +136,7 @@ impl LavaboRepository for PostgresLavaboRepository {
             l.puntuacio_mitja, 
             l.nombre_resenyes,
             l.creador_id,
+            l.localitzacio,
             (
                 SELECT COALESCE(
                     JSON_AGG(
@@ -177,7 +179,7 @@ impl LavaboRepository for PostgresLavaboRepository {
     l.puntuacio_mitja, 
     l.nombre_resenyes,
     l.creador_id,
-    
+    l.localitzacio,
     
     (
         SELECT COALESCE(
