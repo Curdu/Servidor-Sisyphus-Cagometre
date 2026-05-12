@@ -134,7 +134,7 @@ impl UserRepository for PostgresUserRepository {
         }
     }
     async fn obtenir_perfil_per_id(&self, id: Uuid) -> Result<Perfil, UsuariErrors> {
-        let sql_query = r#"SELECT id, nom, cognoms, imatge_url FROM usuari WHERE id = $1"#;
+        let sql_query = r#"SELECT id, nom, cognoms, imatge_url, (SELECT COUNT(*) FROM resenya WHERE id_usuari = $1) as nombre_de_resenyes FROM usuari WHERE id = $1"#;
 
         let result = query_as::<_,Perfil>(sql_query)
             .bind(id)
