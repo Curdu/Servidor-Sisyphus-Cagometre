@@ -36,12 +36,13 @@ pub(crate) struct ModificarPerfilRequest {
     pub(crate) nom: String,
     pub(crate) cognoms: String,
     #[form_data(limit= "unlimited")]
-    pub(crate) imatge : Option<FieldData<NamedTempFile>>
+    pub(crate) imatge : Option<FieldData<NamedTempFile>>,
+    pub(crate) imatge_url : Option<String>
 }
 
 impl From<ModificarPerfilRequest> for (Option<FieldData<NamedTempFile>>, PerfilDTO) {
     fn from(value: ModificarPerfilRequest) -> Self {
-        let perfil_dto = PerfilDTO{id: value.id, nom: value.nom, cognoms: value.cognoms, imatge_url: None, nombre_de_resenyes: 0};
+        let perfil_dto = PerfilDTO{id: value.id, nom: value.nom, cognoms: value.cognoms, imatge_url: value.imatge_url, nombre_de_resenyes: 0};
         let imatge = value.imatge;
         (imatge,perfil_dto)
     }
