@@ -10,7 +10,7 @@ use crate::{errors::lavabo_errors::LavaboErrors, serveis::{dtos::{auth_dto::Auth
 pub(crate) trait LavaboController: Sync + Send {
     async fn crear_lavabo(&self, lavabo_dto: LavaboDTO, imatges: Vec<FieldData<NamedTempFile>>, auth_data : AuthDataDTO, etiquetes: Vec<Uuid>) -> Result<(), LavaboErrors>;
     async fn get_lavabo_per_id(&self,id: Uuid) -> Result<LavaboDTO, LavaboErrors>;
-    async fn actualitzar_lavabo(&self,id: Uuid, lavabo_dto: LavaboDTO) -> Result<LavaboDTO, LavaboErrors>;
+    async fn actualitzar_lavabo(&self,id: Uuid, lavabo_dto: LavaboDetallatDTO) -> Result<LavaboDetallatDTO, LavaboErrors>;
     async fn eliminar_lavabo(&self,id: Uuid) -> Result<(), LavaboErrors>;
     async fn get_tots_lavabos(&self) -> Result<Vec<LavaboDTO>, LavaboErrors>;
     async fn get_tots_lavabos_amb_etiqueta(&self) -> Result<Vec<LavaboAmbEtiquetesDTO>, LavaboErrors>;
@@ -35,7 +35,7 @@ impl LavaboController for LavaboControlador {
     async fn get_lavabo_per_id(&self,id: Uuid) -> Result<LavaboDTO, LavaboErrors>{
         self.lavabo_service.obte_lavabo_per_id(id).await
     }
-    async fn actualitzar_lavabo(&self,id: Uuid, lavabo_dto: LavaboDTO) -> Result<LavaboDTO, LavaboErrors>{
+    async fn actualitzar_lavabo(&self,id: Uuid, lavabo_dto: LavaboDetallatDTO) -> Result<LavaboDetallatDTO, LavaboErrors>{
         self.lavabo_service.actualitzar_lavabo(id, lavabo_dto).await
     }
     async fn eliminar_lavabo(&self,id: Uuid) -> Result<(), LavaboErrors>{

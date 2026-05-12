@@ -56,8 +56,8 @@ pub async fn put_actualitzar_lavabo(
     State(lavabo_controlador) : State<Arc<dyn LavaboController>>, 
     id : Path<Uuid>,
     Extension(claims): Extension<AuthDataDTO>, 
-    body : Json<LavaboDTO>
-) -> Result<Json<LavaboDTO>, LavaboErrors> {
+    body : Json<LavaboDetallatDTO>
+) -> Result<Json<LavaboDetallatDTO>, LavaboErrors> {
     let result = lavabo_controlador.actualitzar_lavabo(*id, body.0).await;
     match result {
         Ok(lavabo) => Ok(Json(lavabo)),

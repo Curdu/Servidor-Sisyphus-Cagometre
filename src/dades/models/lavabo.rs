@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
 use uuid::Uuid;
 
-use crate::{dades::models::resenya::{ResenyaAmbPerfil}, serveis::dtos::lavabo_dto::LavaboDTO};
+use crate::{dades::models::resenya::ResenyaAmbPerfil, serveis::dtos::{etiqueta_dto::EtiquetaDTO, lavabo_dto::{LavaboDTO, LavaboDetallatDTO}, resenya_dto::ResenyaAmbPerfilDTO}};
 
 use super::etiqueta::Etiqueta;
 
@@ -83,4 +83,21 @@ pub(crate) struct LavaboDetallat {
     #[sqlx(json)]
     pub(crate) resenyes: Vec<ResenyaAmbPerfil>,
     pub(crate) localitzacio: String
+}
+impl From<LavaboDetallatDTO> for LavaboDetallat {
+    fn from(value: LavaboDetallatDTO) -> Self {
+        Self { 
+            id: value.id, 
+            descripcio: value.descripcio, 
+            titol: value.titol, 
+            puntuacio_mitja: value.puntuacio_mitja, 
+            nombre_resenyes: value.nombre_resenyes, 
+            created_at: value.created_at, 
+            creador_id: value.creador_id, 
+            etiquetes: value.etiquetes.into_iter().map(EtiquetaDTO::into).collect(), 
+            imatges: vec![], 
+            resenyes: value.resenyes.into_iter().map(ResenyaAmbPerfilDTO::into).collect(),
+            localitzacio: value.localitzacio
+        }
+    }
 }

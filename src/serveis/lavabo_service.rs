@@ -1,4 +1,4 @@
-use std::{ sync::Arc};
+use std::{ collections::HashSet, sync::Arc};
 
 use async_trait::async_trait;
 use axum_typed_multipart::{FieldData};
@@ -6,7 +6,7 @@ use chrono::Utc;
 use tempfile::NamedTempFile;
 use uuid::Uuid;
 
-use crate::{dades::{models::{imatge::StorageImatge, lavabo::LavaboImatge}, repositoris::traits::{ image_repository::ImatgesRepository, lavabo_imatge_repository::LavaboImatgeRepository, lavabo_repository::LavaboRepository}}, errors::{lavabo_errors::LavaboErrors, storage_errors::StorageError}, serveis::dtos::lavabo_dto::{LavaboDTO, LavaboDetallatDTO}};
+use crate::{dades::{models::{etiqueta::Etiqueta, imatge::StorageImatge, lavabo::{Lavabo, LavaboDetallat, LavaboImatge}}, repositoris::traits::{ image_repository::ImatgesRepository, lavabo_imatge_repository::LavaboImatgeRepository, lavabo_repository::LavaboRepository}}, errors::{lavabo_errors::LavaboErrors, storage_errors::StorageError}, serveis::dtos::{etiqueta_dto::EtiquetaDTO, lavabo_dto::{LavaboDTO, LavaboDetallatDTO}}};
 
 use super::dtos::{auth_dto::AuthDataDTO, lavabo_dto::LavaboAmbEtiquetesDTO};
 
@@ -14,7 +14,7 @@ use super::dtos::{auth_dto::AuthDataDTO, lavabo_dto::LavaboAmbEtiquetesDTO};
 pub(crate) trait LavaboService: Sync + Send {
     async fn crear_lavabo(&self ,lavabo_dto: LavaboDTO, imatges : Vec<FieldData<NamedTempFile>>, auth_data: AuthDataDTO, etiquetes: Vec<Uuid>) -> Result<(), LavaboErrors>;
     async fn obte_lavabo_per_id(&self, id: Uuid) -> Result<LavaboDTO, LavaboErrors>;
-    async fn actualitzar_lavabo(&self, id: Uuid, lavabo_dto: LavaboDTO) -> Result<LavaboDTO, LavaboErrors>;
+    async fn actualitzar_lavabo(&self, id: Uuid, lavabo_dto: LavaboDetallatDTO) -> Result<LavaboDetallatDTO, LavaboErrors>;
     async fn eliminar_lavabo(&self, id: Uuid) -> Result<(), LavaboErrors>;
     async fn obte_tots_lavabos(&self) -> Result<Vec<LavaboDTO>, LavaboErrors>;
     async fn obte_tots_lavabos_amb_etiquetes(&self) -> Result<Vec<LavaboAmbEtiquetesDTO>, LavaboErrors>;
@@ -80,14 +80,38 @@ impl LavaboService for LavaboServei {
         }
     }
 
-    async fn actualitzar_lavabo(&self, id: Uuid, lavabo_dto: LavaboDTO) -> Result<LavaboDTO, LavaboErrors>{
-        let result = self.lavabo_repository.actualitzar_lavabo(id.clone(), lavabo_dto.into()).await;
+    async fn actualitzar_lavabo(&self, id: Uuid, lavabo_dto: LavaboDetallatDTO) -> Result<LavaboDetallatDTO, LavaboErrors>{
+        
+        let lavabo_antic= self.lavabo_repository.obte_lavabo_detallat_per_id(id.clone()).await?;
+        let nou_lavabo : LavaboDetallat = lavabo_dto.into();
+        
+        let (etiquetes_afegir, etiquetes_eliminar) = calcular_diferencias_etiquetas(&lavabo_antic.etiquetes, &nou_lavabo.etiquetes);
 
+        for etiqueta in etiquetes_afegir {
+            self.lavabo_repository.afegir_etiquetes_lavabo(etiqueta, id.clone()).await?;
+        }
+        for etiqueta in etiquetes_eliminar {
+            self.lavabo_repository.eliminar_etiqueta_lavabo(etiqueta, id.clone()).await?;
+        }
+        let lavabo_model = Lavabo{
+            id: id.clone(),
+            descripcio: nou_lavabo.descripcio,
+            titol: nou_lavabo.titol,
+            puntuacio_mitja: nou_lavabo.puntuacio_mitja,
+            nombre_resenyes: nou_lavabo.nombre_resenyes,
+            created_at: nou_lavabo.created_at,
+            creador_id: nou_lavabo.creador_id,
+            localitzacio: nou_lavabo.localitzacio
+        };
+        
+        let result = self.lavabo_repository.actualitzar_lavabo(id.clone(), lavabo_model).await;
+        
+        let lav= self.lavabo_repository.obte_lavabo_detallat_per_id(id.clone()).await?;
         match result {
             Ok(()) => {
                 let lavabo = self.lavabo_repository.obte_lavabo_per_id(id).await;
                 match lavabo {
-                    Ok(lvb) => Ok(lvb.into()),
+                    Ok(lvb) => Ok(lav.into()),
                     Err(error) => Err(error)
                 }
             },
@@ -112,4 +136,18 @@ impl LavaboService for LavaboServei {
         Ok(lavabo.into())
     }
     
+}
+pub fn calcular_diferencias_etiquetas(
+    etiquetas_antiguas: &Vec<Etiqueta>, 
+    etiquetas_nuevas: &Vec<Etiqueta>
+) -> (Vec<Uuid>, Vec<Uuid>) {
+ 
+    let ids_antiguos: HashSet<Uuid> = etiquetas_antiguas.iter().map(|e| e.id).collect();
+    let ids_nuevos: HashSet<Uuid> = etiquetas_nuevas.iter().map(|e| e.id).collect();
+
+    let ids_a_eliminar: Vec<Uuid> = ids_antiguos.difference(&ids_nuevos).copied().collect();
+
+    let ids_a_anyadir: Vec<Uuid> = ids_nuevos.difference(&ids_antiguos).copied().collect();
+
+    (ids_a_anyadir,ids_a_eliminar)
 }
