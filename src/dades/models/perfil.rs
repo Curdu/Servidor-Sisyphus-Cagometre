@@ -15,6 +15,10 @@ pub(crate) struct Perfil {
 
 impl From<PerfilDTO> for Perfil {
     fn from(value: PerfilDTO) -> Self {
-        Self { id: value.id, nom: value.nom, cognoms: value.cognoms, imatge_url: value.imatge_url , nombre_de_resenyes: value.nombre_de_resenyes}
+        let imatge = match value.imatge_url {
+            Some(i) => Some(i.replace("https://gcpxeolootoyuomnrpfu.supabase.co/storage/v1/object/public/perfil_images/", "")),
+            None => None
+        };
+        Self { id: value.id, nom: value.nom, cognoms: value.cognoms, imatge_url: imatge , nombre_de_resenyes: value.nombre_de_resenyes}
     }
 }
