@@ -12,7 +12,7 @@ use super::dtos::{auth_dto::AuthDataDTO, lavabo_dto::LavaboAmbEtiquetesDTO};
 
 #[async_trait]
 pub(crate) trait LavaboService: Sync + Send {
-    async fn crear_lavabo(&self ,lavabo_dto: LavaboDTO, imatges : Vec<FieldData<NamedTempFile>>, auth_data: AuthDataDTO) -> Result<(), LavaboErrors>;
+    async fn crear_lavabo(&self ,lavabo_dto: LavaboDTO, imatges : Vec<FieldData<NamedTempFile>>, auth_data: AuthDataDTO, etiquetes: Vec<Uuid>) -> Result<(), LavaboErrors>;
     async fn obte_lavabo_per_id(&self, id: Uuid) -> Result<LavaboDTO, LavaboErrors>;
     async fn actualitzar_lavabo(&self, id: Uuid, lavabo_dto: LavaboDTO) -> Result<LavaboDTO, LavaboErrors>;
     async fn eliminar_lavabo(&self, id: Uuid) -> Result<(), LavaboErrors>;
@@ -24,7 +24,8 @@ pub(crate) trait LavaboService: Sync + Send {
 pub(crate) struct  LavaboServei {
     lavabo_repository : Arc<dyn LavaboRepository>,
     images_repository: Arc<dyn ImatgesRepository>,
-    lavabo_imatges_repository: Arc<dyn LavaboImatgeRepository>
+    lavabo_imatges_repository: Arc<dyn LavaboImatgeRepository>,
+    
 }
 
 impl LavaboServei {
@@ -36,9 +37,14 @@ impl LavaboServei {
 
 #[async_trait]
 impl LavaboService for LavaboServei {
-    async fn crear_lavabo(&self ,lavabo_dto: LavaboDTO, imatges: Vec<FieldData<NamedTempFile>>, auth_data: AuthDataDTO) -> Result<(), LavaboErrors>{
+    async fn crear_lavabo(&self ,lavabo_dto: LavaboDTO, imatges: Vec<FieldData<NamedTempFile>>, auth_data: AuthDataDTO, etiquetes: Vec<Uuid>) -> Result<(), LavaboErrors>{
         let lavabo_id = lavabo_dto.id.clone();
         self.lavabo_repository.crear_lavabo(lavabo_dto.into()).await?;
+
+        for etiqueta in etiquetes {
+            self.lavabo_repository.afegir_etiquetes_lavabo(etiqueta, lavabo_id.clone()).await?;
+        }
+
         let mut errors: Vec<StorageError> = Vec::new();
         println!("{}", imatges.len());
         for imatge in imatges {

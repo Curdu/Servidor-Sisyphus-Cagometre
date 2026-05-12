@@ -12,5 +12,8 @@ pub(crate) trait LavaboRepository: Sync + Send {
     async fn obte_tots_lavabos(&self) -> Result<Vec<Lavabo>, LavaboErrors>;
     async fn obte_tots_lavabos_amb_etiquetes(&self) -> Result<Vec<LavaboAmbEtiquetes>, LavaboErrors>;
     async fn obte_lavabo_detallat_per_id(&self, id: Uuid) -> Result<LavaboDetallat, LavaboErrors>; 
+    async fn eliminar_etiqueta_lavabo(&self, etiqueta : Uuid, id_lavabo: Uuid) -> Result<(), LavaboErrors>;
+    async fn afegir_etiquetes_lavabo(&self, etiqueta : Uuid, id_lavabo: Uuid) -> Result<(), LavaboErrors>;
+    async fn modificar_puntuacio(&self, puntuacio_mitja: f32, nombre_resenyes: i64, id_lavabo: Uuid) -> Result<(), LavaboErrors>;
     
 }
