@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use chrono::Utc;
 use sqlx::PgPool;
 use uuid::Uuid;
 use sqlx::{query,query_as, Error};
@@ -75,6 +76,48 @@ impl LavaboRepository for PostgresLavaboRepository {
         
 
     }
+
+    async fn afegir_etiquetes_lavabo(&self, etiqueta : Uuid, id_lavabo: Uuid) -> Result<(), LavaboErrors> {
+        let sql_query = r#"INSERT INTO lavabo_etiqueta (id_lavabo,id_etiqueta,created_at) VALUES($1,$2,$3)"#;
+        let result = sqlx::query(sql_query)
+            .bind(id_lavabo)
+            .bind(etiqueta)
+            .bind(Utc::now())
+            .execute(&self.bd)
+            .await;
+        if let Err(error) = result {
+            let db_err = error.as_database_error().unwrap();
+            if db_err.code().unwrap() == "23503" {
+                return Err(LavaboErrors::ServerError("El id del lavabo o de la etiqueta no existeix".to_string()))
+            } else {
+                return Err(LavaboErrors::ServerError(db_err.message().to_string()))
+            } 
+        }
+        
+        Ok(())
+    }
+
+    async fn eliminar_etiqueta_lavabo(&self, etiqueta : Uuid, id_lavabo: Uuid) -> Result<(), LavaboErrors> {
+        let sql_query = r#"DELETE FROM lavabo_etiqueta WHERE id_lavabo = $1 AND id_etiqueta = $2"#;
+        let result = sqlx::query(sql_query)
+            .bind(id_lavabo)
+            .bind(etiqueta)
+            .execute(&self.bd)
+            .await;
+        match result {
+            
+            Ok(query_result) =>{
+                if query_result.rows_affected() == 0 {
+                    Err(LavaboErrors::LavaboNotFound("No s'ha trobat el lavabo i la etiqueta amb els ids especificats".to_string()))
+                }else {
+                    Ok(())
+                }
+            },
+            Err(error) => Err(LavaboErrors::ServerError(error.to_string()))
+        }
+
+    }
+
     async fn actualitzar_lavabo(&self,id: Uuid, lavabo : Lavabo) -> Result<(), LavaboErrors>{
         let sql_query = r#"UPDATE lavabo SET descripcio = $1, titol = $2 WHERE id = $3"#;
         let result = query(sql_query)
@@ -233,6 +276,22 @@ impl LavaboRepository for PostgresLavaboRepository {
             Err(err) => Err(LavaboErrors::ServerError(err.to_string()))
             
         }
+    }
+    async fn modificar_puntuacio(&self, puntuacio_mitja: f32, nombre_resenyes: i64, id_lavabo: Uuid) -> Result<(), LavaboErrors> {
+        let sql_query = "UPDATE lavabo SET puntuacio_mitja = $1, nombre_resenyes = $2 WHERE id = $3";
+
+        let result = sqlx::query(sql_query)
+            .bind(puntuacio_mitja)
+            .bind(nombre_resenyes)
+            .bind(id_lavabo)
+            .execute(&self.bd)
+            .await;
+
+        match result {
+            Ok(_) => Ok(()),
+            Err(error) => Err(LavaboErrors::ServerError(error.to_string()))
+        }
+
     }
 
 }

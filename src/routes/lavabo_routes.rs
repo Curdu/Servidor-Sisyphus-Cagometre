@@ -40,9 +40,9 @@ pub async fn post_crear_lavabo(
     Extension(claims): Extension<AuthDataDTO>,
     TypedMultipart(body): TypedMultipart<CreateLavaboRequest>
 ) -> Result<Response, LavaboErrors> {
-    let (mut lavabo_dto, imatges) : (LavaboDTO, Vec<FieldData<NamedTempFile>>) = body.into();
+    let (mut lavabo_dto, imatges, etiquetes) : (LavaboDTO, Vec<FieldData<NamedTempFile>>, Vec<Uuid>) = body.into();
     lavabo_dto.creador_id = Uuid::parse_str(&claims.sub).unwrap();
-    let result = lavabo_controlador.crear_lavabo(lavabo_dto,imatges,claims).await;
+    let result = lavabo_controlador.crear_lavabo(lavabo_dto,imatges,claims, etiquetes).await;
     match result {
         Ok(())=>{
             Ok((StatusCode::CREATED, "Lavabo Creat corectament").into_response())
